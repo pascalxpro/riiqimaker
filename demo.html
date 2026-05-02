@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>杯杯設計工坊 ☕</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:   #FFFBF4;
+      --orange:  #FF8C69;
+      --orange2: #FF6B45;
+      --green:   #A8D8C8;
+      --green2:  #7EC8B0;
+      --brown:   #3D2B1F;
+      --brown2:  #6B4C3B;
+      --yellow:  #FFE0A3;
+      --pink:    #FFD6CC;
+      --radius:  20px;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      color: var(--brown);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── 背景裝飾泡泡 ── */
+    .bg-blobs {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    }
+    .blob {
+      position: absolute; border-radius: 50%; opacity: .18;
+      animation: float 8s ease-in-out infinite;
+    }
+    .blob-1 { width:320px; height:320px; background:var(--orange); top:-80px; left:-80px; animation-delay:0s; }
+    .blob-2 { width:220px; height:220px; background:var(--green);  top:40%;  right:-60px; animation-delay:2s; }
+    .blob-3 { width:160px; height:160px; background:var(--yellow); bottom:10%; left:10%;  animation-delay:4s; }
+    .blob-4 { width:120px; height:120px; background:var(--pink);   bottom:5%; right:20%; animation-delay:1s; }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-20px) scale(1.05); }
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 40px;
+      background: rgba(255,251,244,.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px dashed var(--yellow);
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.5rem; font-weight: 900; color: var(--brown);
+    }
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: var(--orange); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      transition: transform .3s;
+    }
+    .logo:hover .logo-icon { transform: rotate(-15deg) scale(1.1); }
+
+    nav { display: flex; gap: 8px; }
+    nav a {
+      text-decoration: none; color: var(--brown2);
+      font-weight: 700; font-size: .9rem;
+      padding: 8px 16px; border-radius: 30px;
+      transition: all .25s; white-space: nowrap;
+    }
+    nav a:hover { background: var(--yellow); color: var(--brown); }
+    nav a.active { background: var(--orange); color: #fff; }
+
+    /* ── 漢堡選單 ── */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 6px; border-radius: 10px;
+      transition: background .2s;
+    }
+    .hamburger:hover { background: var(--yellow); }
+    .hamburger span {
+      display: block; width: 22px; height: 2.5px;
+      background: var(--brown); border-radius: 4px;
+      transition: all .3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      background: rgba(255,251,244,.97); backdrop-filter: blur(10px);
+      border-bottom: 2px dashed var(--yellow);
+      flex-direction: column; padding: 12px 16px 16px; gap: 4px;
+      z-index: 99;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      text-decoration: none; color: var(--brown2);
+      font-weight: 700; font-size: 1rem;
+      padding: 12px 16px; border-radius: 14px;
+      transition: all .2s;
+    }
+    .mobile-menu a:hover,
+    .mobile-menu a.active { background: var(--pink); color: var(--brown); }
+    .mobile-menu a.active { color: var(--orange); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative; z-index: 5;
+      text-align: center;
+      padding: 70px 20px 50px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--yellow); color: var(--brown);
+      font-weight: 800; font-size: .85rem;
+      padding: 6px 16px; border-radius: 30px;
+      margin-bottom: 20px;
+      animation: badge-bounce .6s ease-out;
+    }
+    @keyframes badge-bounce {
+      0%   { transform: scale(.5); opacity:0; }
+      70%  { transform: scale(1.1); }
+      100% { transform: scale(1);   opacity:1; }
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900; line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .hero h1 span { color: var(--orange); }
+    .hero p {
+      font-size: 1.1rem; color: var(--brown2);
+      max-width: 480px; margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+    .hero-cups {
+      display: flex; justify-content: center; gap: 16px;
+      margin-bottom: 40px; flex-wrap: wrap;
+    }
+    .cup-card {
+      background: #fff; border-radius: var(--radius);
+      padding: 16px 20px; cursor: pointer;
+      border: 2px solid transparent;
+      transition: all .25s;
+      box-shadow: 0 4px 16px rgba(61,43,31,.08);
+      min-width: 110px; text-align: center;
+    }
+    .cup-card:hover {
+      border-color: var(--orange);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(255,140,105,.25);
+    }
+    .cup-card.selected {
+      border-color: var(--orange);
+      background: var(--pink);
+    }
+    .cup-card .cup-emoji { font-size: 2rem; display: block; margin-bottom: 6px; }
+    .cup-card .cup-name { font-size: .8rem; font-weight: 800; color: var(--brown); }
+    .cup-card .cup-type { font-size: .7rem; color: var(--brown2); margin-top: 2px; }
+
+    /* ── Main Card ── */
+    .main-container {
+      position: relative; z-index: 5;
+      max-width: 760px; margin: 0 auto 60px;
+      padding: 0 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 36px;
+      box-shadow: 0 8px 40px rgba(61,43,31,.10);
+    }
+
+    /* ── Steps ── */
+    .steps {
+      display: flex; gap: 0; margin-bottom: 32px;
+      background: var(--cream); border-radius: 50px;
+      padding: 6px; position: relative;
+    }
+    .step-btn {
+      flex: 1; padding: 10px 8px; border: none; background: none;
+      border-radius: 40px; cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800; font-size: .82rem;
+      color: var(--brown2); transition: all .25s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .step-btn.active {
+      background: var(--orange); color: #fff;
+      box-shadow: 0 4px 12px rgba(255,140,105,.4);
+    }
+    .step-btn .step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(255,255,255,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem;
+    }
+    .step-btn:not(.active) .step-num {
+      background: var(--yellow);
+      color: var(--brown);
+    }
+
+    /* ── Section title ── */
+    .section-title {
+      font-size: 1.1rem; font-weight: 900;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title .tag {
+      background: var(--yellow); color: var(--brown);
+      font-size: .7rem; padding: 2px 10px; border-radius: 20px;
+    }
+
+    /* ── Input mode tabs ── */
+    .mode-tabs {
+      display: flex; gap: 10px; margin-bottom: 24px;
+    }
+    .mode-tab {
+      flex: 1; padding: 14px; border-radius: var(--radius);
+      border: 2px solid var(--yellow); background: var(--cream);
+      cursor: pointer; text-align: center;
+      transition: all .25s; font-family: 'Nunito', sans-serif;
+    }
+    .mode-tab:hover { border-color: var(--orange); background: var(--pink); }
+    .mode-tab.active { border-color: var(--orange); background: var(--pink); }
+    .mode-tab .mode-icon { font-size: 1.8rem; display: block; margin-bottom: 6px; }
+    .mode-tab .mode-label { font-size: .85rem; font-weight: 800; color: var(--brown); }
+    .mode-tab .mode-desc  { font-size: .72rem; color: var(--brown2); margin-top: 2px; }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-size: .85rem; font-weight: 800;
+      margin-bottom: 7px; color: var(--brown);
+    }
+    .form-group label span { color: var(--orange); }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%; padding: 12px 16px;
+      border: 2px solid var(--yellow); border-radius: 14px;
+      font-family: 'Nunito', sans-serif; font-size: .95rem;
+      background: var(--cream); color: var(--brown);
+      outline: none; transition: border-color .2s;
+      resize: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--orange); background: #fff; }
+
+    /* ── Info box ── */
+    .info-box {
+      background: var(--yellow); border-radius: 14px;
+      padding: 14px 18px; margin-bottom: 20px;
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .85rem; line-height: 1.6;
+    }
+    .info-box .icon { font-size: 1.2rem; flex-shrink: 0; }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 2.5px dashed var(--orange);
+      border-radius: var(--radius); padding: 40px 20px;
+      text-align: center; cursor: pointer;
+      transition: all .25s; background: var(--cream);
+    }
+    .upload-zone:hover { background: var(--pink); }
+    .upload-zone .upload-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+    .upload-zone .upload-text { font-weight: 800; font-size: 1rem; color: var(--brown); }
+    .upload-zone .upload-hint { font-size: .78rem; color: var(--brown2); margin-top: 6px; }
+
+    /* ── Btn ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 28px; border-radius: 50px;
+      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem;
+      cursor: pointer; border: none; transition: all .25s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--orange); color: #fff;
+      box-shadow: 0 4px 16px rgba(255,140,105,.4);
+      width: 100%; margin-top: 8px;
+    }
+    .btn-primary:hover {
+      background: var(--orange2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,140,105,.5);
+    }
+    .btn-primary:active { transform: scale(.97); }
+
+    .btn-secondary {
+      background: var(--green); color: var(--brown);
+      box-shadow: 0 4px 12px rgba(168,216,200,.4);
+    }
+    .btn-secondary:hover { background: var(--green2); transform: translateY(-2px); }
+
+    .btn-outline {
+      background: #fff; color: var(--brown);
+      border: 2px solid var(--yellow);
+    }
+    .btn-outline:hover { border-color: var(--orange); background: var(--pink); }
+
+    /* ── Result section ── */
+    .result-section { display: none; }
+    .result-section.show { display: block; }
+
+    .result-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      margin-bottom: 20px;
+    }
+    .result-card {
+      border-radius: var(--radius); overflow: hidden;
+      border: 2px solid var(--yellow);
+      transition: transform .25s;
+    }
+    .result-card:hover { transform: translateY(-3px); }
+    .result-preview {
+      height: 160px; background: linear-gradient(135deg, var(--yellow) 0%, var(--pink) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .result-info {
+      padding: 12px 14px; background: #fff;
+    }
+    .result-info .file-name {
+      font-size: .72rem; font-weight: 700; color: var(--brown2);
+      margin-bottom: 10px; word-break: break-all;
+    }
+    .result-info .btn { font-size: .8rem; padding: 8px 16px; width: 100%; }
+
+    /* ── Progress ── */
+    .progress-wrap { display: none; }
+    .progress-wrap.show { display: block; }
+    .progress-bar-bg {
+      background: var(--yellow); border-radius: 50px; height: 12px;
+      overflow: hidden; margin: 12px 0;
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--orange); border-radius: 50px;
+      width: 0%; transition: width .4s ease;
+    }
+    .progress-msg {
+      font-size: .85rem; color: var(--brown2); font-weight: 700;
+      text-align: center;
+    }
+
+    /* ── Success ── */
+    .success-badge {
+      display: none; background: var(--green); color: var(--brown);
+      border-radius: 14px; padding: 12px 16px;
+      font-weight: 800; font-size: .9rem;
+      align-items: center; gap: 8px; margin-bottom: 16px;
+    }
+    .success-badge.show { display: flex; }
+
+    /* ── Cup spec ── */
+    .spec-box {
+      display: none; background: var(--cream);
+      border-radius: var(--radius); padding: 16px 20px; margin-top: 16px;
+    }
+    .spec-box.show { display: block; }
+    .spec-title { font-size: .8rem; font-weight: 800; margin-bottom: 10px; color: var(--brown2); }
+    .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .spec-item { text-align: center; }
+    .spec-item .val { font-size: 1rem; font-weight: 900; color: var(--brown); }
+    .spec-item .key { font-size: .68rem; color: var(--brown2); margin-top: 2px; }
+
+    /* ── Divider ── */
+    .divider {
+      border: none; border-top: 2px dashed var(--yellow);
+      margin: 24px 0;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 5;
+      text-align: center; padding: 24px;
+      font-size: .8rem; color: var(--brown2);
+      border-top: 2px dashed var(--yellow);
+    }
+
+    /* ── Wobble animation ── */
+    @keyframes wobble {
+      0%,100% { transform: rotate(0deg); }
+      25%      { transform: rotate(-8deg); }
+      75%      { transform: rotate(8deg); }
+    }
+    .wobble { animation: wobble .5s ease; }
+
+    /* ── Responsive ── */
+    @media(max-width:600px) {
+      /* Header */
+      header { padding: 12px 16px; }
+      .logo { font-size: 1.1rem; white-space: nowrap; }
+      .logo-icon { width: 34px; height: 34px; font-size: 1.1rem; }
+      #desktopNav { display: none; }
+      .hamburger { display: flex; }
+
+      /* Hero */
+      .hero { padding: 40px 16px 30px; }
+      .hero p { font-size: .95rem; }
+
+      /* Cup cards — horizontal scroll */
+      .hero-cups {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding: 4px 16px 12px;
+        gap: 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .hero-cups::-webkit-scrollbar { display: none; }
+      .cup-card { min-width: 90px; flex-shrink: 0; padding: 12px 14px; }
+      .cup-card .cup-emoji { font-size: 1.6rem; }
+
+      /* Main card */
+      .main-container { padding: 0 12px; }
+      .card { padding: 20px 16px; border-radius: 20px; }
+
+      /* Steps */
+      .steps { gap: 4px; }
+      .step-btn { font-size: .72rem; padding: 8px 4px; gap: 4px; }
+      .step-btn .step-num { width: 18px; height: 18px; font-size: .65rem; }
+
+      /* Mode tabs */
+      .mode-tabs { flex-direction: column; gap: 8px; }
+      .mode-tab { display: flex; align-items: center; gap: 12px; text-align: left; padding: 12px 16px; }
+      .mode-tab .mode-icon { font-size: 1.4rem; display: inline; margin-bottom: 0; flex-shrink: 0; }
+
+      /* Form */
+      .form-group input,
+      .form-group textarea,
+      .form-group select { font-size: .9rem; padding: 10px 14px; }
+
+      /* Upload */
+      .upload-zone { padding: 28px 16px; }
+
+      /* Results */
+      .result-grid { grid-template-columns: 1fr; }
+      .result-preview { height: 130px; }
+
+      /* Spec */
+      .spec-grid { grid-template-columns: repeat(2, 1fr); }
+
+      /* Btn */
+      .btn { font-size: .9rem; padding: 12px 20px; }
+    }
+
+    /* 超小螢幕 320px */
+    @media(max-width:360px) {
+      .step-btn span:not(.step-num) { display: none; }
+      .step-btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 背景泡泡 -->
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+
+<!-- Header -->
+<header style="position:relative">
+  <div class="logo">
+    <div class="logo-icon">☕</div>
+    杯杯設計工坊
+  </div>
+  <!-- 桌面導覽 -->
+  <nav id="desktopNav">
+    <a href="#" class="active">設計工具</a>
+    <a href="#">杯型資料</a>
+    <a href="#">我的作品</a>
+  </nav>
+  <!-- 手機漢堡 -->
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+  <!-- 手機展開選單 -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#" class="active">設計工具</a>
+    <a href="#">杯型資料</a>
+    <a href="#">我的作品</a>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">✨ 輕鬆三步完成紙杯設計</div>
+  <h1>把你的創意<br><span>印上每一個杯子</span></h1>
+  <p>選杯型、設計圖案、一鍵轉換扇形展開圖，<br>下載後直接送印，就這麼簡單！</p>
+
+  <!-- 杯型選擇 -->
+  <div class="hero-cups" id="cupCards">
+    <div class="cup-card selected" onclick="selectCup(this,'8oz_冷熱杯',2.230,326.18,238.56,41.17,2294,1029)">
+      <span class="cup-emoji">🥤</span>
+      <div class="cup-name">8oz</div>
+      <div class="cup-type">冷熱杯</div>
+    </div>
+    <div class="cup-card" onclick="selectCup(this,'12oz_冷熱杯',2.103,369.95,263.51,40.96,2588,1231)">
+      <span class="cup-emoji">🥤</span>
+      <div class="cup-name">12oz</div>
+      <div class="cup-type">冷熱杯</div>
+    </div>
+    <div class="cup-card" onclick="selectCup(this,'16oz_冷熱杯',1.805,426.61,296.43,35.55,2605,1443)">
+      <span class="cup-emoji">🥤</span>
+      <div class="cup-name">16oz</div>
+      <div class="cup-type">冷熱杯</div>
+    </div>
+    <div class="cup-card" onclick="selectCup(this,'20oz_冷熱杯',1.528,502.33,343.30,30.12,2610,1708)">
+      <span class="cup-emoji">🧋</span>
+      <div class="cup-name">20oz</div>
+      <div class="cup-type">冷熱杯</div>
+    </div>
+    <div class="cup-card" onclick="selectCup(this,'8oz_雙層杯',2.534,357.69,280.67,38.26,2344,925)">
+      <span class="cup-emoji">☕</span>
+      <div class="cup-name">8oz</div>
+      <div class="cup-type">雙層杯</div>
+    </div>
+    <div class="cup-card" onclick="selectCup(this,'12oz_雙層杯',2.325,397.51,300.63,38.99,2653,1141)">
+      <span class="cup-emoji">☕</span>
+      <div class="cup-name">12oz</div>
+      <div class="cup-type">雙層杯</div>
+    </div>
+  </div>
+</section>
+
+<!-- Main card -->
+<div class="main-container">
+  <div class="card">
+
+    <!-- Steps -->
+    <div class="steps">
+      <button class="step-btn active" id="stepBtn1" onclick="goStep(1)">
+        <span class="step-num">1</span> 選擇方式
+      </button>
+      <button class="step-btn" id="stepBtn2" onclick="goStep(2)">
+        <span class="step-num">2</span> 設計圖案
+      </button>
+      <button class="step-btn" id="stepBtn3" onclick="goStep(3)">
+        <span class="step-num">3</span> 下載成果
+      </button>
+    </div>
+
+    <!-- ═══ Step 1 ═══ -->
+    <div id="step1">
+      <div class="section-title">
+        選擇你的設計方式
+        <span class="tag">必選</span>
+      </div>
+
+      <div class="mode-tabs">
+        <div class="mode-tab active" id="modeAI" onclick="selectMode('ai')">
+          <span class="mode-icon">🤖</span>
+          <div class="mode-label">AI 幫我生成</div>
+          <div class="mode-desc">描述想法，AI 幫你畫</div>
+        </div>
+        <div class="mode-tab" id="modeUpload" onclick="selectMode('upload')">
+          <span class="mode-icon">🖼️</span>
+          <div class="mode-label">上傳我的設計</div>
+          <div class="mode-desc">自己做好再上傳</div>
+        </div>
+      </div>
+
+      <!-- 杯型規格 -->
+      <div class="spec-box show" id="specBox">
+        <div class="spec-title">📐 <span id="specCupName">8oz_冷熱杯</span> — 矩形圖建議尺寸</div>
+        <div class="spec-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="spec-item">
+            <div class="val" id="specW">2294</div>
+            <div class="key">寬 (px)</div>
+          </div>
+          <div class="spec-item">
+            <div class="val" id="specH">1029</div>
+            <div class="key">高 (px)</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="goStep(2)" style="margin-top:20px">
+        下一步：設計圖案 →
+      </button>
+    </div>
+
+    <!-- ═══ Step 2 ═══ -->
+    <div id="step2" style="display:none">
+
+      <!-- AI mode -->
+      <div id="aiForm">
+        <div class="section-title">告訴 AI 你想要什麼 🎨</div>
+
+        <div class="info-box">
+          <span class="icon">💡</span>
+          <div>矩形圖尺寸已自動設定為 <strong id="infoRatio">2294 × 1029 px</strong>，你只需要描述圖案內容就好！</div>
+        </div>
+
+        <div class="form-group">
+          <label>主題 <span>*</span></label>
+          <input type="text" placeholder="例如：夏日海灘、聖誕節、珍珠奶茶品牌" id="inputTheme">
+        </div>
+        <div class="form-group">
+          <label>風格 <span>*</span></label>
+          <input type="text" placeholder="例如：可愛插畫風、日系簡約、復古美式" id="inputStyle">
+        </div>
+        <div class="form-group">
+          <label>主要文字（選填）</label>
+          <input type="text" placeholder="例如：夏日特調、Summer Vibes" id="inputText">
+        </div>
+        <div class="form-group">
+          <label>補充說明（選填）</label>
+          <textarea rows="3" placeholder="其他想讓 AI 知道的細節..."></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="startGenerate()">
+          ✨ 開始生成矩形圖
+        </button>
+      </div>
+
+      <!-- Upload mode -->
+      <div id="uploadForm" style="display:none">
+        <div class="section-title">上傳你的設計稿 📁</div>
+
+        <div class="info-box">
+          <span class="icon">📐</span>
+          <div>
+            請確認你的圖片尺寸符合規格：<br>
+            <strong>建議尺寸：<span id="infoCanva">2294 × 1029 px</span></strong>
+          </div>
+        </div>
+
+        <div class="upload-zone" onclick="fakeUpload()">
+          <span class="upload-icon">☁️</span>
+          <div class="upload-text">點擊或拖曳圖片到這裡</div>
+          <div class="upload-hint">支援 PNG / JPG，檔案大小上限 10MB</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="startGenerate()" style="margin-top:16px">
+          ✅ 確認上傳並轉換
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="progressWrap">
+        <hr class="divider">
+        <div class="section-title" style="justify-content:center">
+          正在處理中，請稍候 ⏳
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-msg" id="progressMsg">準備中...</div>
+      </div>
+    </div>
+
+    <!-- ═══ Step 3 ═══ -->
+    <div id="step3" style="display:none">
+      <div class="success-badge show">
+        🎉 太棒了！你的設計已完成，可以下載囉！
+      </div>
+
+      <div class="section-title">下載你的成果 💾</div>
+
+      <div class="result-grid">
+        <div class="result-card">
+          <div class="result-preview">🖼️</div>
+          <div class="result-info">
+            <div class="file-name" id="rectFileName">8oz_冷熱杯_矩形圖_20260420_143052.png</div>
+            <button class="btn btn-outline" onclick="fakeDownload('矩形圖')">⬇ 下載矩形圖</button>
+          </div>
+        </div>
+        <div class="result-card">
+          <div class="result-preview" style="background:linear-gradient(135deg,var(--green) 0%,var(--yellow) 100%)">🌀</div>
+          <div class="result-info">
+            <div class="file-name" id="fanFileName">8oz_冷熱杯_扇形圖_20260420_143052.png</div>
+            <button class="btn btn-secondary" onclick="fakeDownload('扇形圖')">⬇ 下載扇形圖</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-outline" onclick="reset()" style="width:100%">
+        🔄 重新設計
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  ☕ 杯杯設計工坊 — 讓每個杯子都有自己的故事
+</footer>
+
+<script>
+  // ── 漢堡選單 ──
+  function toggleMenu() {
+    const hb = document.getElementById('hamburger');
+    const mn = document.getElementById('mobileMenu');
+    hb.classList.toggle('open');
+    mn.classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('header')) {
+      document.getElementById('hamburger').classList.remove('open');
+      document.getElementById('mobileMenu').classList.remove('open');
+    }
+  });
+
+  // ── 杯型資料 ──
+  let currentCup = {
+    name: '8oz_冷熱杯', ratio: 2.230,
+    R: 326.18, r: 238.56, theta: 41.17,
+    W: 2294, H: 1029
+  };
+  let currentMode = 'ai';
+
+  function selectCup(el, name, ratio, R, r, theta, W, H) {
+    document.querySelectorAll('.cup-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    // wobble 動畫
+    const icon = el.querySelector('.cup-emoji');
+    icon.classList.remove('wobble');
+    void icon.offsetWidth;
+    icon.classList.add('wobble');
+    setTimeout(() => icon.classList.remove('wobble'), 500);
+
+    currentCup = { name, ratio, R, r, theta, W, H };
+    updateSpec();
+  }
+
+  function updateSpec() {
+    document.getElementById('specCupName').textContent = currentCup.name;
+    document.getElementById('specW').textContent = currentCup.W;
+    document.getElementById('specH').textContent = currentCup.H;
+    document.getElementById('infoRatio').textContent = currentCup.W + ' × ' + currentCup.H + ' px';
+    document.getElementById('infoCanva').textContent = currentCup.W + ' × ' + currentCup.H + ' px';
+  }
+
+  function selectMode(mode) {
+    currentMode = mode;
+    document.getElementById('modeAI').classList.toggle('active', mode === 'ai');
+    document.getElementById('modeUpload').classList.toggle('active', mode === 'upload');
+    document.getElementById('aiForm').style.display     = mode === 'ai' ? 'block' : 'none';
+    document.getElementById('uploadForm').style.display = mode === 'upload' ? 'block' : 'none';
+  }
+
+  function goStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('step'+i).style.display = i===n ? 'block' : 'none';
+      document.getElementById('stepBtn'+i).classList.toggle('active', i===n);
+    });
+  }
+
+  // ── 模擬生成流程 ──
+  function startGenerate() {
+    document.getElementById('progressWrap').classList.add('show');
+    const fill = document.getElementById('progressFill');
+    const msg  = document.getElementById('progressMsg');
+    const msgs = [
+      '正在理解你的想法... 🧠',
+      '繪製矩形設計圖... 🎨',
+      '套入扇形遮罩... 🌀',
+      '極座標轉換中... ⚙️',
+      '最後潤飾... ✨',
+      '完成！🎉'
+    ];
+    let pct = 0, idx = 0;
+    const iv = setInterval(() => {
+      pct += Math.random() * 18 + 5;
+      if (pct >= 100) { pct = 100; clearInterval(iv); setTimeout(() => showResult(), 400); }
+      fill.style.width = pct + '%';
+      msg.textContent  = msgs[Math.min(idx++, msgs.length-1)];
+    }, 500);
+  }
+
+  function showResult() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const date = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}`;
+    const time = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    document.getElementById('rectFileName').textContent = `${currentCup.name}_矩形圖_${date}_${time}.png`;
+    document.getElementById('fanFileName').textContent  = `${currentCup.name}_扇形圖_${date}_${time}.png`;
+    goStep(3);
+  }
+
+  function fakeDownload(type) {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ 已下載！';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+  }
+
+  function fakeUpload() {
+    const zone = document.querySelector('.upload-zone');
+    zone.innerHTML = `
+      <span class="upload-icon">✅</span>
+      <div class="upload-text">設計稿已上傳！</div>
+      <div class="upload-hint">尺寸驗證通過 — ${currentCup.W} × ${currentCup.H} px</div>
+    `;
+  }
+
+  function reset() {
+    goStep(1);
+    document.getElementById('progressWrap').classList.remove('show');
+    document.getElementById('progressFill').style.width = '0%';
+    selectMode('ai');
+    document.querySelector('.upload-zone').innerHTML = `
+      <span class="upload-icon">☁️</span>
+      <div class="upload-text">點擊或拖曳圖片到這裡</div>
+      <div class="upload-hint">支援 PNG / JPG，檔案大小上限 10MB</div>
+    `;
+  }
+</script>
+</body>
+</html>

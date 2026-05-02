@@ -1,0 +1,914 @@
+{% extends "base.html" %}
+{% block title %}管理後台 · {{ site_title }}{% endblock %}
+{% block nav_admin %}active{% endblock %}
+
+{% block content %}
+<div class="admin-wrap">
+
+  <div class="admin-header">
+    <h2>⚙️ 管理後台</h2>
+    <p id="adminWelcome">載入中…</p>
+  </div>
+
+  <!-- 分頁標籤 -->
+  <div class="admin-tabs">
+    <button class="admin-tab active" data-tab="tab-cup">🥤 杯型設定</button>
+    <button class="admin-tab" data-tab="tab-appear">🎨 外觀設定</button>
+    <button class="admin-tab" data-tab="tab-ai">🤖 AI 設定</button>
+    <button class="admin-tab" data-tab="tab-account">👥 帳號管理</button>
+  </div>
+
+  <!-- ── Tab 1：杯型設定 ── -->
+  <div class="admin-tab-content active" id="tab-cup">
+
+  <!-- 杯型管理卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">🥤</div>
+      杯型數據管理
+    </div>
+    <div class="admin-form">
+      <small class="form-hint" style="display:block;margin-bottom:12px">
+        修改 R、r、θ 後，矩形圖尺寸與扇形轉換會立即使用新數值。
+      </small>
+      <div id="cupsTable"></div>
+    </div>
+  </div>
+
+  <!-- 抬頭名稱設定卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">🏷️</div>
+      抬頭名稱設定
+    </div>
+    <div class="admin-form">
+      <div class="form-group">
+        <label>網站名稱（顯示於 Header、Footer、瀏覽器標籤）</label>
+        <input type="text" id="siteTitleInput" class="form-input" style="width:100%" value="{{ site_title }}">
+      </div>
+      <div class="admin-actions">
+        <button class="btn-primary admin-save" id="btnSaveSiteTitle">💾 儲存</button>
+      </div>
+      <div class="test-result" id="siteTitleResult"></div>
+    </div>
+  </div>
+
+  </div><!-- /tab-cup -->
+
+  <!-- ── Tab 2：外觀設定 ── -->
+  <div class="admin-tab-content" id="tab-appear">
+
+  <!-- 輪播 Banner 設定卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">🖼️</div>
+      輪播 Banner 圖片設定
+    </div>
+    <div class="admin-form">
+      <small class="form-hint" style="display:block;margin-bottom:16px">
+        為 3 張輪播分別上傳背景圖片。上傳時自動壓縮，支援調整尺寸或裁切可視區域。
+      </small>
+
+      <!-- 目標尺寸設定 -->
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px">
+        <label style="flex:1;min-width:120px">
+          目標寬度 (px)
+          <input type="number" id="bannerTargetW" value="1440" min="400" max="2400"
+            style="margin-top:4px;width:100%">
+        </label>
+        <label style="flex:1;min-width:120px">
+          目標高度 (px)
+          <input type="number" id="bannerTargetH" value="500" min="200" max="1200"
+            style="margin-top:4px;width:100%">
+        </label>
+        <div style="flex:2;min-width:180px">
+          <div style="font-size:.85rem;color:var(--text2);margin-bottom:8px">圖片處理方式</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;white-space:nowrap">
+              <input type="radio" name="bannerFit" value="cover" checked>
+              <span>📐 裁切填滿 <small style="opacity:.6">（依比例裁中央）</small></span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;white-space:nowrap">
+              <input type="radio" name="bannerFit" value="scale">
+              <span>🔲 等比縮放 <small style="opacity:.6">（完整顯示不裁切）</small></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 個 Banner Slot -->
+      <div id="bannerSlots"></div>
+    </div>
+  </div>
+
+  <!-- 外觀設定卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">🎨</div>
+      外觀設定
+    </div>
+    <div class="admin-form">
+
+      <div class="form-group">
+        <label>佈景主題</label>
+        <select id="uiTheme" class="admin-select">
+          <optgroup label="基本色系">
+            <option value="warm">暖橘（預設）</option>
+            <option value="ocean">深海藍</option>
+            <option value="lavender">薰衣草</option>
+            <option value="matcha">抹茶</option>
+            <option value="berry">莓果</option>
+          </optgroup>
+          <optgroup label="風格主題">
+            <option value="business">專業商務</option>
+            <option value="artistic">藝術感</option>
+            <option value="neon">霓虹色彩</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>字型</label>
+        <select id="uiFontFamily" class="admin-select">
+          <option value="Nunito">Nunito（預設·圓潤）</option>
+          <option value="Noto Sans TC">Noto Sans TC（清晰·中文友善）</option>
+          <option value="Noto Serif TC">Noto Serif TC（書卷感）</option>
+          <option value="Roboto">Roboto（科技感）</option>
+          <option value="Playfair Display">Playfair Display（藝術優雅）</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>字型顏色 <span style="opacity:.5;font-weight:400">（留空使用主題預設色）</span></label>
+        <div style="display:flex;gap:10px;align-items:center">
+          <input type="color" id="uiFontColor" style="width:48px;height:40px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px">
+          <input type="text"  id="uiFontColorText" placeholder="#留空使用主題預設" style="flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:14px;background:var(--bg);color:var(--text);font-size:.95rem">
+          <button class="btn-test" id="btnClearFontColor" style="padding:8px 14px;white-space:nowrap">✕ 清除</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>字型尺寸：<span id="fontSizeLabel">16</span> px</label>
+        <input type="range" id="uiFontSize" min="12" max="20" value="16"
+          style="width:100%;accent-color:var(--primary)">
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text2);margin-top:4px">
+          <span>12px（小）</span><span>16px（預設）</span><span>20px（大）</span>
+        </div>
+      </div>
+
+      <div class="admin-actions">
+        <button class="btn-primary admin-save" id="btnSaveAppearance">💾 儲存外觀設定</button>
+      </div>
+      <div class="test-result" id="appearanceResult"></div>
+    </div>
+  </div>
+
+  </div><!-- /tab-appear -->
+
+  <!-- ── Tab 3：AI 設定 ── -->
+  <div class="admin-tab-content" id="tab-ai">
+
+  <!-- Prompt 管理卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">📝</div>
+      Stage 1A Prompt 管理
+    </div>
+    <div class="admin-form">
+      <div class="form-group">
+        <label>目前生效的 Prompt 模板</label>
+        <small class="form-hint">
+          可用變數：<code>{"{W_mm}"}</code>、<code>{"{H_mm}"}</code>、<code>{"{theme}"}</code>、<code>{"{style}"}</code>、<code>{"{text}"}</code>
+        </small>
+        <textarea id="promptBody" rows="18"
+          style="font-family:monospace;font-size:.82rem;line-height:1.6;margin-top:8px;resize:vertical"></textarea>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-primary admin-save" id="btnSavePrompt">💾 儲存 Prompt</button>
+        <button class="btn-test" id="btnResetPrompt" style="margin-left:8px">↩ 還原預設</button>
+      </div>
+      <div class="test-result" id="promptResult"></div>
+    </div>
+  </div>
+
+  <!-- AI 設定卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">🤖</div>
+      AI 圖像生成設定
+    </div>
+
+    <div class="admin-form">
+
+      <!-- Gemini API Key -->
+      <div class="form-group">
+        <label>Google Gemini API Key</label>
+        <div class="key-input-wrap">
+          <input type="password" id="apiKeyInput" placeholder="輸入新的 Gemini API Key（留空表示不更改）" autocomplete="off">
+          <button type="button" class="btn-eye" id="btnEye" title="顯示/隱藏">👁</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px">
+          <div class="key-status" id="keyStatus" style="margin:0"></div>
+          <button class="btn-test" id="btnClearGeminiKey" style="padding:3px 10px;font-size:.78rem;display:none">🗑 刪除 Key</button>
+        </div>
+        <small class="form-hint">
+          取得 Key：<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio →</a>
+        </small>
+      </div>
+
+      <!-- HF API Key -->
+      <div class="form-group">
+        <label>Hugging Face API Key <span style="opacity:.5;font-weight:400">（FLUX 免費生圖）</span></label>
+        <div class="key-input-wrap">
+          <input type="password" id="hfKeyInput" placeholder="輸入新的 HF Token（留空表示不更改）" autocomplete="off">
+          <button type="button" class="btn-eye" id="btnHfEye" title="顯示/隱藏">👁</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px">
+          <div class="key-status" id="hfKeyStatus" style="margin:0"></div>
+          <button class="btn-test" id="btnClearHfKey" style="padding:3px 10px;font-size:.78rem;display:none">🗑 刪除 Key</button>
+        </div>
+        <small class="form-hint">
+          取得 Token：<a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener">Hugging Face → Settings → Tokens →</a>
+          建立 Read token 即可
+        </small>
+      </div>
+
+      <!-- 測試連線按鈕 -->
+      <div class="admin-actions" style="margin-bottom:0;gap:8px;flex-wrap:wrap">
+        <button class="btn-test" id="btnTest">🔌 測試 Imagen 連線</button>
+        <button class="btn-test" id="btnTestFlash">🧪 測試 Flash 擴寫</button>
+      </div>
+      <div class="test-result" id="testResult"></div>
+
+      <!-- 分隔線 -->
+      <hr style="border:none;border-top:1px solid var(--border,#e5e7eb);margin:20px 0">
+
+      <!-- 模型選擇 -->
+      <div class="form-group">
+        <label>模型</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="aiModel" class="admin-select" style="flex:1"></select>
+          <button class="btn-test" id="btnScan" style="white-space:nowrap;flex-shrink:0">🔍 搜尋模型</button>
+        </div>
+        <small class="form-hint">Imagen 4 需 Google Cloud 付費帳號；Gemini Flash Image 免費額度可用</small>
+      </div>
+
+      <!-- 儲存按鈕 -->
+      <div class="admin-actions">
+        <button class="btn-primary admin-save" id="btnSave">💾 儲存全部設定</button>
+      </div>
+      <div class="test-result" id="saveResult"></div>
+
+    </div>
+  </div>
+
+  </div><!-- /tab-ai -->
+
+  <!-- ── Tab 4：帳號管理 ── -->
+  <div class="admin-tab-content" id="tab-account">
+
+  <!-- 帳號管理卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">👥</div>
+      帳號管理
+    </div>
+    <div class="admin-form">
+      <div id="usersList"></div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:4px 0 16px">
+
+      <div style="font-weight:700;font-size:.95rem;margin-bottom:12px">新增帳號</div>
+      <div class="cup-row-fields" style="flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <label style="flex:2;min-width:120px">帳號<input type="text" id="newUsername" placeholder="輸入帳號"></label>
+        <label style="flex:2;min-width:120px">密碼<input type="password" id="newPassword" placeholder="至少 6 個字元"></label>
+        <label style="flex:1;min-width:100px">角色
+          <select id="newRole" class="admin-select" style="padding:6px 10px;font-size:.88rem">
+            <option value="user">一般使用者</option>
+            <option value="admin">管理員</option>
+          </select>
+        </label>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-test" id="btnCreateUser">➕ 新增帳號</button>
+        <span class="cup-save-msg" id="createUserMsg"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 修改密碼卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">🔑</div>
+      修改我的密碼
+    </div>
+    <div class="admin-form">
+      <div class="form-group">
+        <label>目前密碼</label>
+        <input type="password" id="oldPw" placeholder="輸入目前密碼">
+      </div>
+      <div class="form-group">
+        <label>新密碼</label>
+        <input type="password" id="newPw" placeholder="至少 6 個字元">
+      </div>
+      <div class="form-group">
+        <label>確認新密碼</label>
+        <input type="password" id="confirmPw" placeholder="再輸入一次新密碼">
+      </div>
+      <div class="admin-actions">
+        <button class="btn-primary admin-save" id="btnChangePw">🔑 更新密碼</button>
+      </div>
+      <div class="test-result" id="changePwResult"></div>
+    </div>
+  </div>
+
+  </div><!-- /tab-account -->
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── Banner 設定 ────────────────────────────────────────
+const BANNER_LABELS = ['Slide 1：主標語', 'Slide 2：AI 智慧生圖', 'Slide 3：扇形轉換'];
+const bannerSlots   = document.getElementById('bannerSlots');
+
+function renderBannerSlots(banners) {
+  bannerSlots.innerHTML = banners.map(b => `
+    <div class="cup-row" id="banner-slot-${b.n}" style="flex-direction:column;gap:12px;align-items:stretch">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <strong style="min-width:160px">${BANNER_LABELS[b.n-1]}</strong>
+        ${b.exists
+          ? `<span class="key-status set" style="padding:2px 10px;border-radius:20px;font-size:.78rem">✅ 已上傳 ${b.size_kb} KB</span>`
+          : `<span class="key-status unset" style="padding:2px 10px;border-radius:20px;font-size:.78rem">未上傳（使用漸層色）</span>`
+        }
+        ${b.exists ? `<button class="btn-test btn-banner-del" data-n="${b.n}"
+          style="padding:3px 10px;font-size:.78rem;color:#e85555">🗑 刪除</button>` : ''}
+      </div>
+      ${b.exists ? `<img src="/banner/${b.n}?t=${Date.now()}" alt="banner${b.n}"
+        style="max-width:100%;max-height:160px;object-fit:cover;border-radius:12px;border:2px solid var(--border)">` : ''}
+      <div class="drop-zone banner-dz" id="banner-dz-${b.n}"
+        style="padding:20px;min-height:80px;cursor:pointer;border-radius:14px">
+        <div class="dz-icon" style="font-size:1.5rem">🖼️</div>
+        <p style="margin:4px 0 0;font-size:.9rem">${b.exists ? '點擊或拖放更換圖片' : '點擊或拖放上傳圖片'}</p>
+        <small>PNG / JPG，依上方尺寸自動處理</small>
+      </div>
+      <input type="file" id="banner-file-${b.n}" accept="image/png,image/jpeg" style="display:none">
+      <div class="progress-wrap" id="banner-prog-${b.n}">
+        <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+        <div class="progress-msg"></div>
+      </div>
+      <div class="error-msg" id="banner-err-${b.n}"></div>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:8px 0">
+  `).join('');
+
+  // 綁定 drop zone 事件
+  banners.forEach(b => {
+    const dz   = document.getElementById(`banner-dz-${b.n}`);
+    const fi   = document.getElementById(`banner-file-${b.n}`);
+    dz.addEventListener('click', () => fi.click());
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault(); dz.classList.remove('drag-over');
+      if (e.dataTransfer.files[0]) uploadBanner(b.n, e.dataTransfer.files[0]);
+    });
+    fi.addEventListener('change', () => {
+      if (fi.files[0]) uploadBanner(b.n, fi.files[0]);
+    });
+  });
+
+  // 刪除按鈕
+  bannerSlots.querySelectorAll('.btn-banner-del').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm(`確定刪除 Banner ${btn.dataset.n} 圖片？`)) return;
+      const res  = await fetch(`/api/admin/banner-delete/${btn.dataset.n}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) loadBannerStatus();
+    });
+  });
+}
+
+async function uploadBanner(n, file) {
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+  const errEl = document.getElementById(`banner-err-${n}`);
+  if (!allowedTypes.includes(file.type)) {
+    errEl.textContent = '請上傳 PNG 或 JPG 圖片'; errEl.classList.add('show'); return;
+  }
+  errEl.classList.remove('show');
+
+  const fit      = document.querySelector('[name=bannerFit]:checked')?.value || 'cover';
+  const targetW  = document.getElementById('bannerTargetW').value;
+  const targetH  = document.getElementById('bannerTargetH').value;
+
+  const progEl = document.getElementById(`banner-prog-${n}`);
+  progEl.classList.add('show');
+  progEl.querySelector('.progress-bar-fill').style.width = '40%';
+  progEl.querySelector('.progress-msg').textContent = '壓縮並上傳中…';
+
+  const fd = new FormData();
+  fd.append('n', n);
+  fd.append('file', file);
+  fd.append('fit', fit);
+  fd.append('target_w', targetW);
+  fd.append('target_h', targetH);
+
+  try {
+    const res  = await fetch('/api/admin/banner-upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.ok) {
+      progEl.querySelector('.progress-bar-fill').style.width = '100%';
+      progEl.querySelector('.progress-msg').textContent =
+        `✅ 完成！原始 ${data.orig_w}×${data.orig_h} → 輸出 ${data.w}×${data.h}，${data.size_kb} KB`;
+      setTimeout(() => { progEl.classList.remove('show'); loadBannerStatus(); }, 1200);
+    } else {
+      progEl.classList.remove('show');
+      errEl.textContent = '❌ ' + data.msg; errEl.classList.add('show');
+    }
+  } catch {
+    progEl.classList.remove('show');
+    errEl.textContent = '❌ 上傳失敗，請稍後再試'; errEl.classList.add('show');
+  }
+}
+
+function loadBannerStatus() {
+  fetch('/api/admin/banner-status').then(r => r.json()).then(d => {
+    if (d.ok) renderBannerSlots(d.banners);
+  });
+}
+
+loadBannerStatus();
+
+// ── 分頁標籤 ──────────────────────────────────────────
+document.querySelectorAll('.admin-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t === tab));
+    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.toggle('active', c.id === target));
+    localStorage.setItem('adminTab', target);
+    // 切到 banner tab 時重新載入狀態
+    if (target === 'tab-appear') loadBannerStatus();
+  });
+});
+// 還原上次選的 tab
+const savedTab = localStorage.getItem('adminTab');
+if (savedTab) {
+  const t = document.querySelector(`.admin-tab[data-tab="${savedTab}"]`);
+  if (t) t.click();
+}
+
+// ── 歡迎文字 ──────────────────────────────────────────
+fetch('/api/auth/me').then(r => r.json()).then(d => {
+  if (d.logged_in) {
+    document.getElementById('adminWelcome').textContent = `歡迎，${d.username}（${d.role === 'admin' ? '管理員' : '一般使用者'}）`;
+  }
+});
+
+// ── 帳號管理 ──────────────────────────────────────────
+const usersList = document.getElementById('usersList');
+
+function renderUsers(users) {
+  usersList.innerHTML = users.map(u => `
+    <div class="cup-row" style="margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-weight:700;min-width:100px">${u.username}</span>
+        <span class="key-status ${u.role === 'admin' ? 'set' : 'unset'}" style="padding:2px 10px;border-radius:20px;font-size:.78rem">
+          ${u.role === 'admin' ? '管理員' : '一般使用者'}
+        </span>
+        <span style="font-size:.78rem;color:var(--text2)">
+          ${u.is_active ? '✅ 啟用中' : '🔴 已停用'}
+        </span>
+        <button class="btn-test btn-toggle-user" data-id="${u.id}" data-active="${u.is_active ? 1 : 0}"
+          style="margin-left:auto;padding:4px 12px;font-size:.8rem">
+          ${u.is_active ? '停用' : '啟用'}
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  usersList.querySelectorAll('.btn-toggle-user').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id     = parseInt(btn.dataset.id);
+      const active = parseInt(btn.dataset.active) === 1;
+      const res    = await fetch(`/api/admin/users/${id}/toggle`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ is_active: !active })
+      });
+      const data = await res.json();
+      if (data.ok) fetch('/api/admin/users').then(r => r.json()).then(renderUsers);
+    });
+  });
+}
+
+fetch('/api/admin/users').then(r => r.json()).then(renderUsers);
+
+document.getElementById('btnCreateUser').addEventListener('click', async () => {
+  const username = document.getElementById('newUsername').value.trim();
+  const password = document.getElementById('newPassword').value.trim();
+  const role     = document.getElementById('newRole').value;
+  const msg      = document.getElementById('createUserMsg');
+  const res  = await fetch('/api/admin/users', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ username, password, role })
+  });
+  const data = await res.json();
+  msg.style.color = data.ok ? 'var(--accent2, #4caf50)' : '#e85555';
+  msg.textContent = data.ok ? `✅ 帳號「${username}」已建立` : `❌ ${data.msg}`;
+  if (data.ok) {
+    document.getElementById('newUsername').value = '';
+    document.getElementById('newPassword').value = '';
+    fetch('/api/admin/users').then(r => r.json()).then(renderUsers);
+  }
+  setTimeout(() => { msg.textContent = ''; }, 4000);
+});
+
+// ── 修改密碼 ──────────────────────────────────────────
+document.getElementById('btnChangePw').addEventListener('click', async () => {
+  const oldPw     = document.getElementById('oldPw').value;
+  const newPw     = document.getElementById('newPw').value;
+  const confirmPw = document.getElementById('confirmPw').value;
+  const result    = document.getElementById('changePwResult');
+  result.className = 'test-result';
+
+  if (newPw !== confirmPw) {
+    result.textContent = '❌ 兩次輸入的新密碼不一致';
+    result.className   = 'test-result show err';
+    return;
+  }
+  if (newPw.length < 6) {
+    result.textContent = '❌ 新密碼至少 6 個字元';
+    result.className   = 'test-result show err';
+    return;
+  }
+  const res  = await fetch('/api/auth/change-password', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ old_password: oldPw, new_password: newPw })
+  });
+  const data = await res.json();
+  result.textContent = data.ok ? '✅ 密碼已更新，請重新登入' : `❌ ${data.msg}`;
+  result.className   = `test-result show ${data.ok ? 'ok' : 'err'}`;
+  if (data.ok) {
+    document.getElementById('oldPw').value     = '';
+    document.getElementById('newPw').value     = '';
+    document.getElementById('confirmPw').value = '';
+    setTimeout(() => {
+      fetch('/api/auth/logout', {method:'POST'}).then(() => location.href = '/login');
+    }, 1500);
+  }
+});
+
+// ── 杯型管理 ──────────────────────────────────────────
+const cupsTable = document.getElementById('cupsTable');
+
+function renderCups(cups) {
+  cupsTable.innerHTML = cups.map(c => `
+    <div class="cup-row" id="cup-row-${c.id}">
+      <div class="cup-row-name">${c.cup_name}</div>
+      <div class="cup-row-fields">
+        <label>R (mm)<input type="number" step="0.01" value="${c.outer_r}" data-field="outer_r" data-id="${c.id}"></label>
+        <label>r (mm)<input type="number" step="0.01" value="${c.inner_r}" data-field="inner_r" data-id="${c.id}"></label>
+        <label>θ (°)<input type="number"  step="0.01" value="${c.theta_deg}" data-field="theta_deg" data-id="${c.id}"></label>
+        <label>備註<input type="text" value="${c.note||''}" data-field="note" data-id="${c.id}" placeholder="—"></label>
+      </div>
+      <div class="cup-row-info">矩形圖：${c.w_px} × ${c.h_px} px</div>
+      <div class="cup-row-actions">
+        <button class="btn-test btn-cup-save" data-id="${c.id}">💾 儲存</button>
+        <span class="cup-save-msg" id="cup-msg-${c.id}"></span>
+      </div>
+    </div>
+  `).join('');
+
+  cupsTable.querySelectorAll('.btn-cup-save').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id  = parseInt(btn.dataset.id);
+      const row = document.getElementById(`cup-row-${id}`);
+      const get = f => parseFloat(row.querySelector(`[data-field="${f}"]`).value);
+      const note = row.querySelector('[data-field="note"]').value;
+      btn.disabled = true;
+      const res  = await fetch(`/api/admin/cups/${id}`, {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ outer_r: get('outer_r'), inner_r: get('inner_r'), theta_deg: get('theta_deg'), note })
+      });
+      const data = await res.json();
+      const msg  = document.getElementById(`cup-msg-${id}`);
+      if (data.ok) {
+        msg.textContent = `✅ 已儲存　矩形圖：${data.cup.w_px} × ${data.cup.h_px} px`;
+        msg.style.color = 'var(--accent)';
+      } else {
+        msg.textContent = `❌ ${data.msg}`;
+        msg.style.color = '#e85555';
+      }
+      btn.disabled = false;
+      setTimeout(() => { msg.textContent = ''; }, 4000);
+    });
+  });
+}
+
+fetch('/api/admin/cups').then(r => r.json()).then(renderCups);
+
+// ── 外觀設定 ──────────────────────────────────────────
+const uiTheme       = document.getElementById('uiTheme');
+const uiFontFamily  = document.getElementById('uiFontFamily');
+const uiFontColor   = document.getElementById('uiFontColor');
+const uiFontColorText = document.getElementById('uiFontColorText');
+const uiFontSize    = document.getElementById('uiFontSize');
+const fontSizeLabel = document.getElementById('fontSizeLabel');
+const appearanceResult = document.getElementById('appearanceResult');
+
+uiFontSize.addEventListener('input', () => { fontSizeLabel.textContent = uiFontSize.value; });
+
+uiFontColor.addEventListener('input', () => { uiFontColorText.value = uiFontColor.value; });
+uiFontColorText.addEventListener('input', () => {
+  if (/^#[0-9A-Fa-f]{6}$/.test(uiFontColorText.value)) uiFontColor.value = uiFontColorText.value;
+});
+document.getElementById('btnClearFontColor').addEventListener('click', () => {
+  uiFontColorText.value = ''; uiFontColor.value = '#000000';
+});
+
+fetch('/api/admin/appearance').then(r => r.json()).then(d => {
+  if (!d.ok) return;
+  uiTheme.value = d.ui_theme || 'warm';
+  uiFontFamily.value = d.ui_font_family || 'Nunito';
+  uiFontSize.value = d.ui_font_size || '16';
+  fontSizeLabel.textContent = d.ui_font_size || '16';
+  if (d.ui_font_color) { uiFontColor.value = d.ui_font_color; uiFontColorText.value = d.ui_font_color; }
+});
+
+document.getElementById('btnSaveAppearance').addEventListener('click', async () => {
+  const btn = document.getElementById('btnSaveAppearance');
+  btn.disabled = true; btn.textContent = '儲存中…';
+  appearanceResult.className = 'test-result'; appearanceResult.textContent = '';
+  const color = /^#[0-9A-Fa-f]{6}$/.test(uiFontColorText.value) ? uiFontColorText.value : '';
+  const res = await fetch('/api/admin/appearance', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      ui_theme: uiTheme.value,
+      ui_font_family: uiFontFamily.value,
+      ui_font_color: color,
+      ui_font_size: uiFontSize.value,
+    })
+  });
+  const data = await res.json();
+  appearanceResult.textContent = data.ok ? '✅ 已儲存，套用中…' : `❌ ${data.msg}`;
+  appearanceResult.className = `test-result show ${data.ok ? 'ok' : 'err'}`;
+  btn.disabled = false; btn.textContent = '💾 儲存外觀設定';
+  if (data.ok) {
+    localStorage.removeItem('theme');
+    setTimeout(() => location.reload(), 800);
+  }
+});
+
+// ── 抬頭名稱設定 ──────────────────────────────────────
+const siteTitleInput  = document.getElementById('siteTitleInput');
+const btnSaveSiteTitle = document.getElementById('btnSaveSiteTitle');
+const siteTitleResult  = document.getElementById('siteTitleResult');
+
+btnSaveSiteTitle.addEventListener('click', async () => {
+  btnSaveSiteTitle.disabled = true; btnSaveSiteTitle.textContent = '儲存中…';
+  const res = await fetch('/api/admin/site-title', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ site_title: siteTitleInput.value })
+  });
+  const d = await res.json();
+  siteTitleResult.className = 'test-result ' + (d.ok ? 'success' : 'error');
+  siteTitleResult.textContent = d.ok ? '✅ 儲存成功，重新整理頁面即可看到效果' : ('❌ ' + d.msg);
+  btnSaveSiteTitle.disabled = false; btnSaveSiteTitle.textContent = '💾 儲存';
+});
+
+// ── Prompt 管理 ──────────────────────────────────────
+const promptBody    = document.getElementById('promptBody');
+const btnSavePrompt = document.getElementById('btnSavePrompt');
+const btnResetPrompt= document.getElementById('btnResetPrompt');
+const promptResult  = document.getElementById('promptResult');
+
+const DEFAULT_PROMPT = `{theme} themed {style} wrapping paper design, flat lay, top-down view.
+Illustrated surface pattern with "{text}" as the main centered text and a small icon at bottom-right.
+Style: flat 2D vector art, pure white background, vibrant colors, seamless left-right tiling.
+Canvas: {W_mm}x{H_mm}mm. No 3D, no cup, no perspective.`;
+
+fetch('/api/admin/prompt').then(r => r.json()).then(d => {
+  if (d.ok) promptBody.value = d.body;
+});
+
+btnSavePrompt.addEventListener('click', async () => {
+  btnSavePrompt.disabled = true; btnSavePrompt.textContent = '儲存中…';
+  promptResult.className = 'test-result'; promptResult.textContent = '';
+  const res  = await fetch('/api/admin/prompt', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ body: promptBody.value })
+  });
+  const data = await res.json();
+  promptResult.textContent = data.ok ? '✅ Prompt 已儲存' : `❌ ${data.msg}`;
+  promptResult.className   = `test-result show ${data.ok ? 'ok' : 'err'}`;
+  btnSavePrompt.disabled = false; btnSavePrompt.textContent = '💾 儲存 Prompt';
+});
+
+btnResetPrompt.addEventListener('click', () => {
+  if (confirm('確定還原成預設 Prompt？')) promptBody.value = DEFAULT_PROMPT;
+});
+
+// ── AI 設定 ───────────────────────────────────────────
+const aiModel     = document.getElementById('aiModel');
+const apiKeyInput = document.getElementById('apiKeyInput');
+const hfKeyInput  = document.getElementById('hfKeyInput');
+const btnEye      = document.getElementById('btnEye');
+const btnHfEye    = document.getElementById('btnHfEye');
+const btnTest     = document.getElementById('btnTest');
+const btnScan     = document.getElementById('btnScan');
+const btnSave     = document.getElementById('btnSave');
+const testResult  = document.getElementById('testResult');
+const saveResult  = document.getElementById('saveResult');
+const keyStatus   = document.getElementById('keyStatus');
+const hfKeyStatus = document.getElementById('hfKeyStatus');
+
+// HF FLUX 靜態選項（不需掃描）
+const HF_MODELS = [
+  { value: 'hf:black-forest-labs/FLUX.1-schnell', label: 'FLUX.1-schnell ⚡（免費、最快）' },
+  { value: 'hf:black-forest-labs/FLUX.1-dev',     label: 'FLUX.1-dev（需 HF Pro）' },
+];
+
+function buildHfGroup() {
+  const g = document.createElement('optgroup');
+  g.label = 'Hugging Face FLUX（免費額度可用）';
+  HF_MODELS.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m.value; o.textContent = m.label;
+    g.appendChild(o);
+  });
+  return g;
+}
+
+function setModelOption(modelVal) {
+  if (!modelVal) return;
+  for (const opt of aiModel.options) {
+    if (opt.value === modelVal) { opt.selected = true; return; }
+  }
+  // 不在清單中，動態插入
+  const o = document.createElement('option');
+  o.value = modelVal; o.textContent = modelVal + '（已儲存）'; o.selected = true;
+  aiModel.insertBefore(o, aiModel.firstChild);
+}
+
+function maskKey(k) {
+  return k.length > 4 ? '•'.repeat(k.length - 4) + k.slice(-4) : '•'.repeat(k.length);
+}
+
+// 初始化下拉：先放 HF 靜態群組
+aiModel.appendChild(buildHfGroup());
+
+const btnClearGeminiKey = document.getElementById('btnClearGeminiKey');
+const btnClearHfKey     = document.getElementById('btnClearHfKey');
+const btnTestFlash      = document.getElementById('btnTestFlash');
+
+function refreshKeyStatus() {
+  fetch('/api/admin/ai-settings').then(r => r.json()).then(d => {
+    setModelOption(d.model);
+    if (d.key_set) {
+      keyStatus.textContent = `目前已設定（${d.key_masked}）`;
+      keyStatus.className = 'key-status set';
+      btnClearGeminiKey.style.display = 'inline-block';
+    } else {
+      keyStatus.textContent = '尚未設定 Gemini API Key';
+      keyStatus.className = 'key-status unset';
+      btnClearGeminiKey.style.display = 'none';
+    }
+    if (d.hf_key_set) {
+      hfKeyStatus.textContent = `目前已設定（${d.hf_key_masked}）`;
+      hfKeyStatus.className = 'key-status set';
+      btnClearHfKey.style.display = 'inline-block';
+    } else {
+      hfKeyStatus.textContent = '尚未設定 HF Token';
+      hfKeyStatus.className = 'key-status unset';
+      btnClearHfKey.style.display = 'none';
+    }
+  });
+}
+
+// 載入現有設定
+refreshKeyStatus();
+
+// 顯示/隱藏 Key
+btnEye.addEventListener('click',   () => { apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password'; });
+btnHfEye.addEventListener('click', () => { hfKeyInput.type  = hfKeyInput.type  === 'password' ? 'text' : 'password'; });
+
+// 刪除 Gemini Key
+btnClearGeminiKey.addEventListener('click', async () => {
+  if (!confirm('確定要刪除 Gemini API Key？')) return;
+  const res  = await fetch('/api/admin/clear-key', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: 'gemini_api_key' })
+  });
+  const data = await res.json();
+  if (data.ok) refreshKeyStatus();
+});
+
+// 刪除 HF Key
+btnClearHfKey.addEventListener('click', async () => {
+  if (!confirm('確定要刪除 HF API Key？')) return;
+  const res  = await fetch('/api/admin/clear-key', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: 'hf_api_key' })
+  });
+  const data = await res.json();
+  if (data.ok) refreshKeyStatus();
+});
+
+// 測試 Imagen 連線（只驗證 key，不掃模型）
+btnTest.addEventListener('click', async () => {
+  btnTest.disabled = true; btnTest.textContent = '測試中…';
+  testResult.className = 'test-result'; testResult.textContent = '';
+  const res  = await fetch('/api/admin/test-connection-only', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: apiKeyInput.value.trim() })
+  });
+  const data = await res.json();
+  testResult.textContent = data.ok ? `✅ ${data.msg}` : `❌ ${data.msg}`;
+  testResult.className   = `test-result show ${data.ok ? 'ok' : 'err'}`;
+  btnTest.disabled = false; btnTest.textContent = '🔌 測試 Imagen 連線';
+});
+
+// 測試 Flash 擴寫連線
+btnTestFlash.addEventListener('click', async () => {
+  btnTestFlash.disabled = true; btnTestFlash.textContent = '測試中…';
+  testResult.className = 'test-result'; testResult.textContent = '';
+  const res  = await fetch('/api/admin/test-flash', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: apiKeyInput.value.trim() })
+  });
+  const data = await res.json();
+  testResult.textContent = data.ok ? `✅ ${data.msg}` : `❌ ${data.msg}`;
+  testResult.className   = `test-result show ${data.ok ? 'ok' : 'err'}`;
+  btnTestFlash.disabled = false; btnTestFlash.textContent = '🧪 測試 Flash 擴寫';
+});
+
+// 搜尋 Google 可用模型（掃描並加到下拉）
+btnScan.addEventListener('click', async () => {
+  btnScan.disabled = true; btnScan.textContent = '掃描中…';
+  testResult.className = 'test-result'; testResult.textContent = '';
+  const currentVal = aiModel.value;
+  const res  = await fetch('/api/admin/test-connection', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: apiKeyInput.value.trim() })
+  });
+  const data = await res.json();
+  if (data.ok) {
+    // 重建 Google 群組，保留 HF 群組
+    [...aiModel.querySelectorAll('optgroup')].forEach(g => {
+      if (!g.label.includes('Hugging Face')) g.remove();
+    });
+    if (data.imagen_models?.length) {
+      const g1 = document.createElement('optgroup');
+      g1.label = 'Imagen（需付費帳號）';
+      data.imagen_models.forEach(m => {
+        const o = document.createElement('option');
+        o.value = m.replace('models/', ''); o.textContent = o.value; g1.appendChild(o);
+      });
+      aiModel.insertBefore(g1, aiModel.firstChild);
+    }
+    if (data.flash_img_models?.length) {
+      const insertAfter = aiModel.querySelector('optgroup[label="Imagen（需付費帳號）"]') || null;
+      const g2 = document.createElement('optgroup');
+      g2.label = 'Gemini Flash Image（免費額度）';
+      data.flash_img_models.forEach(m => {
+        const o = document.createElement('option');
+        o.value = m.replace('models/', ''); o.textContent = o.value; g2.appendChild(o);
+      });
+      if (insertAfter) insertAfter.after(g2); else aiModel.insertBefore(g2, aiModel.firstChild);
+    }
+    setModelOption(currentVal);
+    testResult.textContent = `✅ ${data.msg}`;
+    testResult.className   = 'test-result show ok';
+  } else {
+    testResult.textContent = `❌ ${data.msg}`;
+    testResult.className   = 'test-result show err';
+  }
+  btnScan.disabled = false; btnScan.textContent = '🔍 搜尋模型';
+});
+
+// 儲存全部設定
+btnSave.addEventListener('click', async () => {
+  btnSave.disabled = true; btnSave.textContent = '儲存中…';
+  const res  = await fetch('/api/admin/ai-settings', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model:   aiModel.value,
+      api_key: apiKeyInput.value.trim(),
+      hf_key:  hfKeyInput.value.trim()
+    })
+  });
+  const data = await res.json();
+  saveResult.textContent = data.ok ? '✅ 設定已儲存' : '❌ 儲存失敗';
+  saveResult.className   = `test-result show ${data.ok ? 'ok' : 'err'}`;
+  btnSave.disabled = false; btnSave.textContent = '💾 儲存全部設定';
+  if (data.ok) {
+    if (apiKeyInput.value) apiKeyInput.value = '';
+    if (hfKeyInput.value)  hfKeyInput.value  = '';
+    fetch('/api/admin/ai-settings').then(r => r.json()).then(d => {
+      if (d.key_set) { keyStatus.textContent = `目前已設定（${d.key_masked}）`; keyStatus.className = 'key-status set'; }
+      if (d.hf_key_set) { hfKeyStatus.textContent = `目前已設定（${d.hf_key_masked}）`; hfKeyStatus.className = 'key-status set'; }
+    });
+  }
+});
+</script>
+{% endblock %}

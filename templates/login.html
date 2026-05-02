@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}登入 · {{ site_title }}{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+  <div class="card login-card">
+    <div class="login-icon">☕</div>
+    <h2 class="login-title">歡迎回來</h2>
+    <p class="login-sub">請登入以繼續使用</p>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label>帳號</label>
+        <input type="text" id="loginUser" placeholder="輸入帳號" autocomplete="username" autofocus>
+      </div>
+      <div class="form-group">
+        <label>密碼</label>
+        <div class="key-input-wrap">
+          <input type="password" id="loginPw" placeholder="輸入密碼" autocomplete="current-password">
+          <button type="button" class="btn-eye" id="btnEyeLogin">👁</button>
+        </div>
+      </div>
+      <div class="error-msg" id="loginErr"></div>
+      <button type="submit" class="btn-primary" style="width:100%;margin-top:8px">登入 →</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('btnEyeLogin').addEventListener('click', () => {
+  const pw = document.getElementById('loginPw');
+  pw.type = pw.type === 'password' ? 'text' : 'password';
+});
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPw').value;
+  const errEl    = document.getElementById('loginErr');
+  errEl.classList.remove('show');
+
+  const res  = await fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  const data = await res.json();
+
+  if (data.ok) {
+    const params = new URLSearchParams(location.search);
+    location.href = params.get('next') || (data.role === 'admin' ? '/admin' : '/');
+  } else {
+    errEl.textContent = data.msg;
+    errEl.classList.add('show');
+  }
+});
+</script>
+{% endblock %}

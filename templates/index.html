@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero Banner 輪播 ── -->
+<section class="hero hero-banner">
+  <div class="hc-wrap">
+
+    <!-- Slide 1 -->
+    <div class="hc-slide hc-slide-1 active{% if banner_exists[0] %} has-image{% endif %}"
+         {% if banner_exists[0] %}style="background-image:url('/banner/1')"{% endif %}>
+      <div class="hc-badge">✨ 矩形圖 → 扇形圖，一鍵搞定！</div>
+      <h1 class="hc-title">設計你的<span>專屬紙杯</span><br>讓每杯都與眾不同</h1>
+      <p class="hc-sub">選好杯型，AI 幫你畫、或自己上傳，<br>系統自動轉成印刷用扇形展開圖！</p>
+      <div class="hc-emojis">🥤 ☕ 🧋</div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="hc-slide hc-slide-2{% if banner_exists[1] %} has-image{% endif %}"
+         {% if banner_exists[1] %}style="background-image:url('/banner/2')"{% endif %}>
+      <div class="hc-badge">🤖 AI 智慧生圖</div>
+      <h1 class="hc-title">輸入主題<br><span>AI 秒出設計</span></h1>
+      <p class="hc-sub">支援 Gemini Imagen、Flash Image 及 HF FLUX，<br>多種風格一鍵生成，省去繁複設計流程</p>
+      <div class="hc-emojis">🎨 ✨ 🖼️</div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="hc-slide hc-slide-3{% if banner_exists[2] %} has-image{% endif %}"
+         {% if banner_exists[2] %}style="background-image:url('/banner/3')"{% endif %}>
+      <div class="hc-badge">📐 極座標數學轉換</div>
+      <h1 class="hc-title">矩形圖<span>自動彎成</span><br>扇形展開圖</h1>
+      <p class="hc-sub">依杯型 R、r、θ 精準轉換，<br>輸出印刷級圖檔，可直接送廠</p>
+      <div class="hc-emojis">📏 🔄 🏭</div>
+    </div>
+
+    <!-- 左右箭頭 -->
+    <button class="hc-arrow hc-prev" aria-label="上一張">&#8249;</button>
+    <button class="hc-arrow hc-next" aria-label="下一張">&#8250;</button>
+
+    <!-- 圓點指示 -->
+    <div class="hc-dots">
+      <span class="hc-dot active" data-i="0"></span>
+      <span class="hc-dot"        data-i="1"></span>
+      <span class="hc-dot"        data-i="2"></span>
+    </div>
+  </div>
+
+  <button class="btn-start" id="btnStart">開始設計 →</button>
+</section>
+
+<!-- ── 步驟導覽 ── -->
+<div class="steps-bar">
+  <div class="step-item active" id="step1">
+    <div class="step-num">1</div>
+    <span>選擇杯型</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-item" id="step2">
+    <div class="step-num">2</div>
+    <span>製作 + 轉換</span>
+  </div>
+  <div class="step-line"></div>
+  <div class="step-item" id="step3">
+    <div class="step-num">3</div>
+    <span>下載檔案</span>
+  </div>
+</div>
+
+<!-- ── 主要內容區 ── -->
+<div class="main-wrap" id="mainSection">
+
+  <!-- Step 1：選擇杯型 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="icon">1️⃣</div>
+      選擇你的杯型
+    </div>
+
+    <div class="cup-scroll">
+      {% for cup in cups %}
+      <button class="cup-btn" data-id="{{ cup.id }}"
+              onclick="selectCup({{ cup.id }}, {{ cup.w_px }}, {{ cup.h_px }}, '{{ cup.cup_name }}')">
+        <span class="cup-emoji">{{ '🥤' if cup.cup_series == 'cold_hot' else '☕' }}</span>
+        <span class="cup-name">{{ cup.cup_name }}</span>
+      </button>
+      {% endfor %}
+    </div>
+
+    <div class="spec-box" id="specBox">
+      <div class="spec-row1">
+        <span class="spec-icon">📐</span>
+        <span class="spec-name"></span>
+      </div>
+      <div class="spec-row2">
+        <span class="spec-label">矩形圖尺寸</span>
+        <span class="spec-badge spec-size"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2：製作矩形圖 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="icon">2️⃣</div>
+      製作矩形圖
+    </div>
+
+    <!-- 1A / 1B Tabs -->
+    <div class="tab-row">
+      <button class="tab-btn active" data-tab="panel1a">🤖 AI 幫我生成</button>
+      <button class="tab-btn"        data-tab="panel1b">📤 自行上傳</button>
+    </div>
+
+    <!-- Panel 1A -->
+    <div class="tab-panel active" id="panel1a">
+      <div class="info-box" id="infoBox1a">
+        📐 矩形圖尺寸已自動設定為 <strong id="infoSize">— 請先選擇杯型 —</strong>
+      </div>
+
+      <form id="generateForm">
+        <div class="form-group">
+          <label>設計主題 <span style="opacity:.6">（例如：聖誕節、春季花園）</span></label>
+          <input type="text" name="theme" placeholder="輸入主題…" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>風格 <span style="opacity:.6">（例如：簡約、插畫風、日式）</span></label>
+          <input type="text" name="style" placeholder="輸入風格…" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>主要文字 <span style="opacity:.6">（例如：品牌名稱、標語）</span></label>
+          <textarea name="text" placeholder="輸入要放在杯子上的文字…"></textarea>
+        </div>
+
+        <!-- 進階 Prompt -->
+        <div class="form-group">
+          <label>
+            進階：自訂 Prompt
+            <span style="opacity:.5;font-weight:400;font-size:.85rem">（選填，會附加在主題之後）</span>
+          </label>
+          <textarea name="custom_prompt" id="customPrompt" placeholder="直接輸入英文或中文 prompt，例如：watercolor style, pastel pink and mint green, hand-drawn flowers…" style="min-height:90px"></textarea>
+        </div>
+
+        <div class="progress-wrap" id="genProgress">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill"></div>
+          </div>
+          <div class="progress-msg"></div>
+        </div>
+        <div class="error-msg" id="generateErr"></div>
+
+        <button type="submit" class="btn-primary">✨ 開始生成矩形圖</button>
+      </form>
+    </div>
+
+    <!-- Panel 1B -->
+    <div class="tab-panel" id="panel1b">
+      <div class="info-box">
+        📐 建議尺寸：<strong id="uploadInfoSize">— 請先選擇杯型 —</strong>
+      </div>
+
+      <form id="uploadForm">
+        <div class="drop-zone" id="dropZone">
+          <div class="dz-icon">🖼️</div>
+          <p>點擊選擇或拖放圖片到這裡</p>
+          <small>支援 PNG、JPG，建議按照上方尺寸製作</small>
+        </div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg" style="display:none">
+
+        <div class="progress-wrap" id="uploadProgress">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill"></div>
+          </div>
+          <div class="progress-msg"></div>
+        </div>
+        <div class="error-msg" id="uploadErr"></div>
+        <div class="warn-msg" id="uploadWarn"></div>
+        <div class="celebrate" id="uploadCelebrate">🎉 圖片上傳成功！繼續下一步吧</div>
+
+        <button type="submit" class="btn-primary">✅ 上傳並驗證</button>
+      </form>
+    </div>
+
+    <!-- 矩形圖完成後：內嵌轉換區 -->
+    <div id="convertSection" style="display:none;margin-top:4px">
+      <div style="border-top:2px dashed var(--border);padding-top:20px;margin-top:8px">
+        <div style="display:flex;align-items:center;gap:14px;background:var(--bg);border:2px solid var(--border);border-radius:16px;padding:14px 18px;margin-bottom:16px">
+          <img id="rectMiniPreview" src="#" alt="矩形圖縮圖"
+            style="width:90px;height:52px;object-fit:cover;border-radius:10px;border:1.5px solid var(--border);flex-shrink:0">
+          <div>
+            <div style="font-weight:800;font-size:.95rem">✅ 矩形圖已準備完成</div>
+            <div style="font-size:.82rem;color:var(--text2);margin-top:4px">確認圖片無誤後，按下方按鈕轉換成扇形展開圖</div>
+          </div>
+        </div>
+        <button class="btn-primary" id="btnConvert" disabled>
+          🌀 開始轉換扇形圖
+        </button>
+        <div class="progress-wrap" id="convertProgress">
+          <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+          <div class="progress-msg"></div>
+        </div>
+        <div class="error-msg" id="convertErr"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3：下載 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="icon">3️⃣</div>
+      下載你的檔案
+    </div>
+
+    <div class="result-wrap" id="resultWrap">
+      <div class="result-title">🎊 完成！兩個檔案分別下載</div>
+      <div class="result-imgs">
+        <div class="result-card">
+          <img src="#" alt="矩形圖預覽" id="rectPreview">
+          <p>矩形圖</p>
+          <a href="#" class="btn-dl" id="dlRect">⬇ 下載矩形圖</a>
+        </div>
+        <div class="result-card">
+          <img src="#" alt="扇形圖預覽" id="fanPreview">
+          <p>扇形圖</p>
+          <a href="#" class="btn-dl" id="dlFan">⬇ 下載扇形圖</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultPlaceholder" style="text-align:center; color:var(--text2); font-size:.9rem; padding:20px 0;">
+      完成製作與轉換後，下載連結會出現在這裡 🥤
+    </div>
+  </div>
+
+</div><!-- /.main-wrap -->
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── Hero 輪播 ──────────────────────────────
+(function () {
+  const slides = document.querySelectorAll('.hc-slide');
+  const dots   = document.querySelectorAll('.hc-dot');
+  let cur = 0, timer;
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    cur = (n + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+  }
+
+  function next() { goTo(cur + 1); }
+  function prev() { goTo(cur - 1); }
+
+  function startAuto() { timer = setInterval(next, 5000); }
+  function stopAuto()  { clearInterval(timer); }
+
+  document.querySelector('.hc-next').addEventListener('click', () => { stopAuto(); next(); startAuto(); });
+  document.querySelector('.hc-prev').addEventListener('click', () => { stopAuto(); prev(); startAuto(); });
+  dots.forEach(d => d.addEventListener('click', () => { stopAuto(); goTo(+d.dataset.i); startAuto(); }));
+
+  // 手機滑動
+  let tx = 0;
+  const wrap = document.querySelector('.hc-wrap');
+  wrap.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  wrap.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) { stopAuto(); dx < 0 ? next() : prev(); startAuto(); }
+  }, { passive: true });
+
+  wrap.addEventListener('mouseenter', stopAuto);
+  wrap.addEventListener('mouseleave', startAuto);
+
+  startAuto();
+})();
+
+</script>
+{% endblock %}

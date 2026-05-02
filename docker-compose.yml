@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  flask:
+    build: .
+    container_name: cup-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5100:5000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./static:/app/static
+    networks:
+      - default
+      - supabase_default
+
+networks:
+  supabase_default:
+    external: true

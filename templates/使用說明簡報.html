@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>紙杯扇形圖系統 · 使用說明</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="deck-stage.js"></script>
+<script type="application/json" id="speaker-notes">
+[
+"哈囉大家好！今天要跟各位介紹我們的『紙杯扇形圖系統』。簡單一句話：你用矩形思考設計、我們幫你彎成印刷用的扇形圖。接下來我會帶你走過一般使用者最常用的四個步驟：選杯型、做矩形圖、轉扇形、下載。全部大概五分鐘就能上手。",
+
+"先講一下為什麼需要這個系統。紙杯其實不是方的，它的展開圖是一個扇形。但你在 Canva、AI 工具裡都是用矩形畫布在設計的。所以以前的流程是：設計師畫完矩形 → 手動在 Illustrator 彎成扇形 → 對齊檢查 → 出圖。現在我們把後半段自動化，你只要專心在矩形裡把設計做好就行。",
+
+"整個流程只有四步。選一個杯型、做一張矩形圖、按一個按鈕轉換、下載。中間不需要你懂數學，也不需要你會 Illustrator。系統會自動幫你算比例、算弧長、做極座標映射。如果你不想自己畫，我們還有 AI 幫你生。",
+
+"第一步：選杯型。我們內建了 10 種常見杯型，從 8oz 到 24oz，冷熱杯和雙層杯都有。你點一下，系統會馬上告訴你『等一下你的矩形圖要做多大』。譬如 8oz 冷熱杯就是 2294×1029 像素。這個尺寸是根據那個杯型的弧長跟展開比例算出來的，照這個尺寸做，最後印出來才不會變形。",
+
+"第二步：做矩形圖。這裡你有兩個選擇。第一個是『AI 幫我生成』，適合沒有設計工具、或想快速試想法的人。第二個是『自行上傳』，適合已經有設計、或是想用 Canva、Photoshop 自己畫的人。兩條路最後產出的都是同一張矩形圖，不會影響後面的轉換。",
+
+"先看 AI 生成這條路。你只要填三件事：主題、風格、主要文字。譬如主題寫『春天櫻花』、風格寫『日式簡約』、文字寫你的品牌名。系統會把這些跟我們預先寫好的設計規範（背景全白、Logo 放右上、文字水平置中這些印刷規則）組起來丟給 AI，等個十幾秒，矩形圖就出來了。提醒一下：Prompt 的規範是後端統一管的，你不用煩惱，也沒辦法改，這是為了確保印出來品質一致。",
+
+"第二條路是自行上傳。你在 Canva 或任何工具做完設計，存成 PNG 或 JPG，拖到這個框裡就好。系統會幫你檢查兩件事：一是尺寸對不對、二是比例對不對。檢查過了會出現一個小慶祝動畫，代表可以進下一步了。如果尺寸錯了它會直接告訴你差多少，你回去改完再上傳就好。",
+
+"第三步：轉換扇形圖。這步是整個系統的核心魔法。按下按鈕，後端用 Python 做極座標轉換，把你的矩形彎成該杯型專屬的扇形。要特別講一下：這步完全不用 AI、不花 API 費用，只有數學。所以不管你按幾次、做幾杯，這部分都是免費的。通常幾秒內就完成。",
+
+"第四步：下載。你會拿到兩個檔案：原本的矩形圖、以及轉好的扇形圖。兩個都下載，為什麼？矩形圖是你的『設計原稿』，之後要改字、改圖你從這邊改；扇形圖是『印刷檔』，直接丟給印刷廠就能上機。檔名會自動帶杯型跟時間戳，不會搞混。",
+
+"幾個常被問的：第一，匿名可以用嗎？可以，但檔案不會保留，要立刻下載。有登入的帳號我們會幫你保留最後一次的檔案。第二，同一張矩形圖可以轉不同杯型嗎？技術上可以，但強烈建議不要，因為每個杯型的最佳尺寸不同，換杯型要重做矩形。第三，出來的顏色會不會跑掉？不會，Stage 2 是幾何轉換，不動你的像素顏色。",
+
+"最後總結一下。四步驟：選杯型、做矩形、轉扇形、下載。核心價值是把『數學的苦差事』從你身上拿掉，讓你專心做設計。有問題歡迎在群組問，或是看後台的使用手冊。謝謝大家！"
+]
+</script>
+<style>
+  :root{
+    /*EDITMODE-BEGIN*/
+    --bg: #FFFBF4;
+    --ink: #3D2B1F;
+    --ink-2: #6B5544;
+    --coral: #FF8C69;
+    --mint: #A8D8C8;
+    --cream: #FFF4E3;
+    --line: #E8DCC8;
+    --accent: #FFB88C;
+    /*EDITMODE-END*/
+  }
+
+  html,body{margin:0;padding:0;background:#1a1411;font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,sans-serif;color:var(--ink);}
+  *{box-sizing:border-box}
+
+  deck-stage{width:100vw;height:100vh;display:block}
+
+  section{
+    width:1920px;height:1080px;
+    background:var(--bg);
+    position:relative;
+    overflow:hidden;
+    color:var(--ink);
+    font-size:22px;
+    line-height:1.55;
+  }
+
+  /* ---------- shared type ---------- */
+  .display{
+    font-family:"Noto Serif TC","Noto Sans TC",serif;
+    font-weight:900;
+    letter-spacing:-.01em;
+    line-height:1.05;
+  }
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+  .kicker{
+    font-family:"JetBrains Mono",monospace;
+    font-size:18px;
+    letter-spacing:.25em;
+    color:var(--coral);
+    text-transform:uppercase;
+    font-weight:600;
+  }
+  .footer{
+    position:absolute;bottom:42px;left:80px;right:80px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:"JetBrains Mono",monospace;font-size:16px;color:var(--ink-2);
+    letter-spacing:.08em;
+  }
+  .footer .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);display:inline-block;margin-right:10px;vertical-align:middle}
+  .slide-num{font-variant-numeric:tabular-nums}
+
+  /* ---------- decorative shapes ---------- */
+  .blob{position:absolute;border-radius:50%;filter:blur(.5px);opacity:.6;pointer-events:none}
+
+  /* ---------- cup spec tag ---------- */
+  .chip{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:10px 18px;border-radius:999px;
+    background:var(--cream);border:1.5px solid var(--line);
+    font-size:18px;font-weight:500;color:var(--ink);
+  }
+  .chip .led{width:10px;height:10px;border-radius:50%;background:var(--coral)}
+
+  /* ---------- mock browser chrome ---------- */
+  .mock{
+    border-radius:18px;background:#fff;
+    box-shadow:0 30px 60px -30px rgba(61,43,31,.25), 0 0 0 1.5px var(--line);
+    overflow:hidden;
+  }
+  .mock-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:14px 18px;background:#F6EDDC;border-bottom:1.5px solid var(--line);
+  }
+  .mock-bar .d{width:12px;height:12px;border-radius:50%;background:#E8C9B4}
+  .mock-bar .url{
+    flex:1;margin-left:16px;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+    padding:6px 14px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink-2);
+  }
+
+  /* ---------- step pill ---------- */
+  .steppill{
+    display:inline-flex;align-items:center;gap:14px;
+    padding:10px 22px 10px 10px;border-radius:999px;
+    background:var(--coral);color:#fff;font-weight:700;font-size:22px;
+  }
+  .steppill .num{
+    width:42px;height:42px;border-radius:50%;background:#fff;color:var(--coral);
+    display:grid;place-items:center;font-family:"Noto Serif TC",serif;font-weight:900;font-size:22px;
+  }
+  .steppill.mint{background:var(--mint);color:#2A4A3C}
+  .steppill.mint .num{color:#2A4A3C}
+</style>
+</head>
+<body>
+
+<deck-stage>
+
+<!-- ========== Slide 1 : Cover ========== -->
+<section data-screen-label="01 封面">
+  <!-- bg decoration -->
+  <div class="blob" style="width:520px;height:520px;background:var(--mint);top:-140px;right:-140px;opacity:.5"></div>
+  <div class="blob" style="width:380px;height:380px;background:var(--coral);bottom:-120px;left:-80px;opacity:.35"></div>
+
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 140px;">
+    <div class="kicker" style="margin-bottom:36px">USER GUIDE · v1 · 2026</div>
+    <h1 class="display" style="font-size:148px;margin:0;">
+      把矩形<span style="color:var(--coral);font-style:italic">彎</span><br>
+      成紙杯的形狀
+    </h1>
+    <p style="font-size:32px;max-width:820px;margin:40px 0 0;color:var(--ink-2);line-height:1.5">
+      五分鐘上手「矩形轉扇形圖系統」——<br>
+      選好杯型、做一張圖、點一下按鈕，就能拿到印刷廠要的扇形展開檔。
+    </p>
+
+    <div style="display:flex;gap:18px;margin-top:56px">
+      <span class="chip"><span class="led"></span>一般使用者 · 主功能教學</span>
+      <span class="chip" style="background:#fff"><span class="led" style="background:var(--mint)"></span>四個步驟 · 約 5 分鐘</span>
+    </div>
+  </div>
+
+  <!-- cup emoji cluster -->
+  <div style="position:absolute;right:180px;bottom:180px;display:flex;gap:32px;font-size:120px;transform:rotate(-6deg)">
+    <span style="transform:rotate(4deg)">🥤</span>
+    <span>☕</span>
+    <span style="transform:rotate(-5deg)">🧋</span>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>扇形圖解決方案</span>
+    <span class="slide-num">01</span>
+  </div>
+</section>
+
+<!-- ========== Slide 2 : Why ========== -->
+<section data-screen-label="02 為什麼需要這個工具">
+  <div style="position:absolute;inset:0;padding:90px 140px;">
+    <div class="kicker">WHY</div>
+    <h2 class="display" style="font-size:84px;margin:18px 0 0">
+      紙杯不是方的，<br>
+      但你的設計工具是。
+    </h2>
+    <p style="font-size:28px;max-width:1000px;margin-top:36px;color:var(--ink-2)">
+      Canva、Figma、AI 生圖都在矩形畫布上工作。可是印刷廠要的是扇形展開圖——<br>以前要手動在 Illustrator 裡彎、對、調，現在我們把這段自動化了。
+    </p>
+
+    <!-- before/after visual -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:60px;align-items:center;margin-top:90px;">
+      <!-- before -->
+      <div style="text-align:center">
+        <div class="kicker" style="color:var(--ink-2);margin-bottom:20px">你做的</div>
+        <div style="aspect-ratio:2.23/1;background:var(--cream);border:2.5px solid var(--line);border-radius:14px;position:relative;padding:24px;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="font-family:'Noto Serif TC',serif;font-size:46px;font-weight:900;color:var(--coral);text-align:center;margin-top:40px">SPRING<br>BLOSSOM</div>
+          <div style="display:flex;justify-content:space-between;color:var(--ink-2);font-size:14px;" class="mono">
+            <span>2294 × 1029 px</span>
+            <span>RECTANGLE</span>
+          </div>
+        </div>
+        <div style="margin-top:18px;font-size:20px;color:var(--ink-2)">矩形圖（設計稿）</div>
+      </div>
+
+      <!-- arrow -->
+      <div style="font-size:72px;color:var(--coral);font-weight:900">→</div>
+
+      <!-- after -->
+      <div style="text-align:center">
+        <div class="kicker" style="color:var(--ink-2);margin-bottom:20px">系統吐出</div>
+        <div style="aspect-ratio:2.23/1;position:relative;display:flex;align-items:flex-end;justify-content:center">
+          <svg viewBox="0 0 600 270" style="width:100%;height:100%;overflow:visible">
+            <defs>
+              <clipPath id="fanclip1">
+                <path d="M300,760 A760,760 0 0 1 300,760 Z M 82,270 A760,760 0 0 1 518,270 L 425,24 A520,520 0 0 0 175,24 Z"/>
+              </clipPath>
+            </defs>
+            <!-- fan shape via two arcs -->
+            <path d="M 82,270 A 760,760 0 0 1 518,270 L 425,24 A 520,520 0 0 0 175,24 Z"
+                  fill="#FFF4E3" stroke="#E8DCC8" stroke-width="2.5"/>
+            <text x="300" y="180" text-anchor="middle" font-family="'Noto Serif TC',serif" font-weight="900" font-size="42" fill="#FF8C69">SPRING</text>
+            <text x="300" y="225" text-anchor="middle" font-family="'Noto Serif TC',serif" font-weight="900" font-size="42" fill="#FF8C69">BLOSSOM</text>
+          </svg>
+        </div>
+        <div style="margin-top:18px;font-size:20px;color:var(--ink-2)">扇形圖（印刷檔）</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>為什麼需要這個工具</span>
+    <span class="slide-num">02</span>
+  </div>
+</section>
+
+<!-- ========== Slide 3 : Flow overview ========== -->
+<section data-screen-label="03 流程總覽">
+  <div style="position:absolute;inset:0;padding:90px 140px;">
+    <div class="kicker">THE FLOW</div>
+    <h2 class="display" style="font-size:84px;margin:18px 0 60px">四個步驟，就這些。</h2>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:36px">
+      <!-- step card template -->
+      <div class="mock" style="padding:36px 28px 32px;border-radius:22px;position:relative">
+        <div style="font-family:'Noto Serif TC',serif;font-weight:900;font-size:120px;line-height:.9;color:var(--coral);opacity:.22;position:absolute;top:10px;right:18px">1</div>
+        <div style="font-size:56px">🥤</div>
+        <h3 class="display" style="font-size:36px;margin:22px 0 10px">選杯型</h3>
+        <p style="color:var(--ink-2);font-size:20px;margin:0;line-height:1.55">從 10 款杯型中點一個，<br>系統自動算好建議尺寸。</p>
+      </div>
+
+      <div class="mock" style="padding:36px 28px 32px;border-radius:22px;position:relative;background:#FFF9EC">
+        <div style="font-family:'Noto Serif TC',serif;font-weight:900;font-size:120px;line-height:.9;color:var(--coral);opacity:.22;position:absolute;top:10px;right:18px">2</div>
+        <div style="font-size:56px">🎨</div>
+        <h3 class="display" style="font-size:36px;margin:22px 0 10px">做矩形圖</h3>
+        <p style="color:var(--ink-2);font-size:20px;margin:0;line-height:1.55">AI 幫你生 <strong style="color:var(--coral)">or</strong><br>自行上傳 Canva 檔。</p>
+      </div>
+
+      <div class="mock" style="padding:36px 28px 32px;border-radius:22px;position:relative">
+        <div style="font-family:'Noto Serif TC',serif;font-weight:900;font-size:120px;line-height:.9;color:var(--coral);opacity:.22;position:absolute;top:10px;right:18px">3</div>
+        <div style="font-size:56px">🌀</div>
+        <h3 class="display" style="font-size:36px;margin:22px 0 10px">轉扇形</h3>
+        <p style="color:var(--ink-2);font-size:20px;margin:0;line-height:1.55">一鍵極座標轉換，<br>不用 AI、不花錢、幾秒完成。</p>
+      </div>
+
+      <div class="mock" style="padding:36px 28px 32px;border-radius:22px;position:relative;background:#F1FAF4">
+        <div style="font-family:'Noto Serif TC',serif;font-weight:900;font-size:120px;line-height:.9;color:#6DA892;opacity:.35;position:absolute;top:10px;right:18px">4</div>
+        <div style="font-size:56px">⬇️</div>
+        <h3 class="display" style="font-size:36px;margin:22px 0 10px">下載</h3>
+        <p style="color:var(--ink-2);font-size:20px;margin:0;line-height:1.55">矩形圖 + 扇形圖，<br>兩個 PNG 分別下載。</p>
+      </div>
+    </div>
+
+    <!-- timeline -->
+    <div style="margin-top:90px;display:flex;align-items:center;gap:28px;font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink-2)">
+      <span style="padding:10px 20px;background:var(--coral);color:#fff;border-radius:999px;font-weight:600">總耗時 ≈ 5 分鐘</span>
+      <span>·</span>
+      <span>選杯型 10 秒</span>
+      <span>→</span>
+      <span>做圖 3 分鐘</span>
+      <span>→</span>
+      <span>轉換 5 秒</span>
+      <span>→</span>
+      <span>下載 10 秒</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>流程總覽</span>
+    <span class="slide-num">03</span>
+  </div>
+</section>
+
+<!-- ========== Slide 4 : Step 1 ========== -->
+<section data-screen-label="04 Step 1 選杯型">
+  <div style="position:absolute;inset:0;padding:80px 120px;display:grid;grid-template-columns:1fr 1.1fr;gap:70px;align-items:center">
+    <!-- left: explainer -->
+    <div>
+      <div class="steppill"><span class="num">1</span>選擇杯型</div>
+      <h2 class="display" style="font-size:76px;margin:28px 0 20px">先告訴系統，<br>你要做哪一杯？</h2>
+      <p style="font-size:24px;color:var(--ink-2);line-height:1.7">
+        內建 <strong style="color:var(--coral)">10 款杯型</strong>——
+        8/12/16/20/22/24oz 冷熱杯，<br>
+        與 8/12/16/20oz 雙層杯。
+      </p>
+
+      <div style="margin-top:36px;padding:26px 30px;background:var(--cream);border-left:5px solid var(--coral);border-radius:14px">
+        <div class="kicker" style="color:var(--coral);font-size:14px;margin-bottom:10px">系統會自動幫你算</div>
+        <div style="font-size:22px;line-height:1.9">
+          ✓ 矩形圖建議尺寸（px）<br>
+          ✓ 杯口／杯底直徑
+        </div>
+      </div>
+
+      <p style="margin-top:30px;font-size:20px;color:var(--ink-2);font-style:italic">
+        小提醒：杯型一旦選定，之後的尺寸驗證都依它為準，中途改會要重做矩形圖。
+      </p>
+    </div>
+
+    <!-- right: UI mock -->
+    <div class="mock" style="width:100%">
+      <div class="mock-bar">
+        <span class="d" style="background:#FF8C69"></span>
+        <span class="d" style="background:#FFD98C"></span>
+        <span class="d" style="background:#A8D8C8"></span>
+        <span class="url">cup-designer.local/</span>
+      </div>
+      <div style="padding:34px 30px;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+          <div style="width:44px;height:44px;border-radius:12px;background:var(--coral);color:#fff;display:grid;place-items:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:22px">1</div>
+          <div style="font-weight:700;font-size:24px">選擇你的杯型</div>
+        </div>
+
+        <!-- cup scroll mock -->
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+          <!-- cup buttons -->
+          <div style="padding:18px 10px;border:2px solid var(--coral);background:#FFF4E3;border-radius:14px;text-align:center;position:relative">
+            <div style="font-size:34px">🥤</div>
+            <div style="font-size:13px;font-weight:700;margin-top:4px">8oz 冷熱杯</div>
+            <div style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--coral);color:#fff;font-size:12px;display:grid;place-items:center;font-weight:700">✓</div>
+          </div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">🥤</div><div style="font-size:13px;margin-top:4px">12oz 冷熱杯</div></div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">🥤</div><div style="font-size:13px;margin-top:4px">16oz 冷熱杯</div></div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">🥤</div><div style="font-size:13px;margin-top:4px">20oz 冷熱杯</div></div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">🥤</div><div style="font-size:13px;margin-top:4px">22oz 冷熱杯</div></div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">🥤</div><div style="font-size:13px;margin-top:4px">24oz 冷熱杯</div></div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">☕</div><div style="font-size:13px;margin-top:4px">8oz 雙層杯</div></div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">☕</div><div style="font-size:13px;margin-top:4px">12oz 雙層杯</div></div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">☕</div><div style="font-size:13px;margin-top:4px">16oz 雙層杯</div></div>
+          <div style="padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;text-align:center"><div style="font-size:34px">☕</div><div style="font-size:13px;margin-top:4px">20oz 雙層杯</div></div>
+        </div>
+
+        <!-- spec box -->
+        <div style="margin-top:22px;padding:22px 24px;background:linear-gradient(135deg,#FFF4E3,#FFEBDA);border:1.5px solid var(--line);border-radius:14px">
+          <div style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;margin-bottom:10px">
+            <span style="font-size:24px">📐</span> 8oz_冷熱杯
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:var(--ink-2)">
+            <span>矩形圖尺寸</span>
+            <span style="padding:6px 14px;background:var(--coral);color:#fff;border-radius:999px;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:16px">2294 × 1029 px</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>Step 1 · 選擇杯型</span>
+    <span class="slide-num">04</span>
+  </div>
+</section>
+
+<!-- ========== Slide 5 : Step 2 overview ========== -->
+<section data-screen-label="05 Step 2 製作矩形圖">
+  <div style="position:absolute;inset:0;padding:90px 140px">
+    <div class="steppill"><span class="num">2</span>製作矩形圖</div>
+    <h2 class="display" style="font-size:84px;margin:28px 0 16px">兩條路，自己挑。</h2>
+    <p style="font-size:26px;color:var(--ink-2);margin:0 0 60px">不管走哪條，最後產出的都是同一張矩形圖，不影響後面的轉換。</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+      <!-- 1A -->
+      <div style="padding:48px 44px;background:#FFF4E3;border-radius:24px;border:2px solid var(--line);position:relative">
+        <div style="position:absolute;top:-20px;left:40px;background:var(--coral);color:#fff;padding:8px 18px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.1em">ROUTE · 1A</div>
+        <div style="font-size:88px">🤖</div>
+        <h3 class="display" style="font-size:50px;margin:14px 0 12px">AI 幫我生成</h3>
+        <p style="font-size:22px;color:var(--ink-2);margin:0 0 24px">填三個欄位，AI 產出你的設計。</p>
+
+        <div style="display:grid;gap:12px;font-size:20px">
+          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid var(--line)"><span class="mono" style="color:var(--coral);font-size:14px">01</span>&nbsp;&nbsp;主題 — 例如「春天櫻花」</div>
+          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid var(--line)"><span class="mono" style="color:var(--coral);font-size:14px">02</span>&nbsp;&nbsp;風格 — 例如「日式簡約」</div>
+          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid var(--line)"><span class="mono" style="color:var(--coral);font-size:14px">03</span>&nbsp;&nbsp;主要文字 — 品牌、標語</div>
+        </div>
+
+        <div style="margin-top:28px;font-size:18px;color:var(--ink-2)">👉 適合：沒有設計工具／想快速試想法</div>
+      </div>
+
+      <!-- 1B -->
+      <div style="padding:48px 44px;background:#EFF8F3;border-radius:24px;border:2px solid #CFE5DA;position:relative">
+        <div style="position:absolute;top:-20px;left:40px;background:#6DA892;color:#fff;padding:8px 18px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.1em">ROUTE · 1B</div>
+        <div style="font-size:88px">📤</div>
+        <h3 class="display" style="font-size:50px;margin:14px 0 12px">自行上傳</h3>
+        <p style="font-size:22px;color:var(--ink-2);margin:0 0 24px">在 Canva / PS 做完，拖進來就好。</p>
+
+        <div style="display:grid;gap:12px;font-size:20px">
+          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid #CFE5DA"><span class="mono" style="color:#6DA892;font-size:14px">01</span>&nbsp;&nbsp;支援 PNG / JPG</div>
+          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid #CFE5DA"><span class="mono" style="color:#6DA892;font-size:14px">02</span>&nbsp;&nbsp;後端自動檢查尺寸 + 比例</div>
+          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid #CFE5DA"><span class="mono" style="color:#6DA892;font-size:14px">03</span>&nbsp;&nbsp;通過才能進下一步</div>
+        </div>
+
+        <div style="margin-top:28px;font-size:18px;color:var(--ink-2)">👉 適合：已有設計稿／用自己熟悉的工具</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>Step 2 · 製作矩形圖</span>
+    <span class="slide-num">05</span>
+  </div>
+</section>
+
+<!-- ========== Slide 6 : Stage 1A walk ========== -->
+<section data-screen-label="06 Stage 1A AI 生成">
+  <div style="position:absolute;inset:0;padding:70px 100px;display:grid;grid-template-columns:1fr 1.15fr;gap:60px;align-items:center">
+    <!-- left -->
+    <div>
+      <div class="kicker">ROUTE · 1A</div>
+      <h2 class="display" style="font-size:72px;margin:16px 0 24px">AI 幫你畫這張圖</h2>
+      <ol style="list-style:none;padding:0;margin:0;counter-reset:s">
+        <li style="display:flex;gap:22px;margin-bottom:22px;align-items:flex-start">
+          <span style="flex:0 0 48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:22px">1</span>
+          <div>
+            <div style="font-size:24px;font-weight:700">填三個欄位</div>
+            <div style="color:var(--ink-2);font-size:20px">主題、風格、主要文字，越具體越好。</div>
+          </div>
+        </li>
+        <li style="display:flex;gap:22px;margin-bottom:22px;align-items:flex-start">
+          <span style="flex:0 0 48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:22px">2</span>
+          <div>
+            <div style="font-size:24px;font-weight:700">系統組 Prompt</div>
+            <div style="color:var(--ink-2);font-size:20px">後端把印刷規範（白底／Logo 位置／文字置中）＋ 你的輸入，組好送給 AI。</div>
+          </div>
+        </li>
+        <li style="display:flex;gap:22px;margin-bottom:22px;align-items:flex-start">
+          <span style="flex:0 0 48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:22px">3</span>
+          <div>
+            <div style="font-size:24px;font-weight:700">等 10–20 秒</div>
+            <div style="color:var(--ink-2);font-size:20px">矩形圖直接生成在畫面上，不滿意可重生。</div>
+          </div>
+        </li>
+      </ol>
+
+      <div style="margin-top:28px;padding:20px 24px;background:#FFF4E3;border-radius:14px;border:1.5px dashed var(--coral);font-size:18px;color:var(--ink-2)">
+        ℹ️ Prompt 規範由管理員統一維護，確保印刷品質一致，你不用也不能改。
+      </div>
+    </div>
+
+    <!-- right: form mock -->
+    <div class="mock">
+      <div class="mock-bar">
+        <span class="d" style="background:#FF8C69"></span><span class="d" style="background:#FFD98C"></span><span class="d" style="background:#A8D8C8"></span>
+        <span class="url">cup-designer.local/ · Step 2</span>
+      </div>
+      <div style="padding:32px 34px;">
+        <div style="display:flex;gap:8px;margin-bottom:22px">
+          <div style="padding:10px 20px;background:var(--coral);color:#fff;border-radius:999px;font-weight:700;font-size:16px">🤖 AI 幫我生成</div>
+          <div style="padding:10px 20px;background:#F6EDDC;color:var(--ink-2);border-radius:999px;font-size:16px">📤 自行上傳</div>
+        </div>
+
+        <div style="padding:14px 18px;background:#FFF4E3;border-radius:10px;font-size:15px;color:var(--ink-2);margin-bottom:22px">
+          📐 矩形圖尺寸已自動設定為 <strong style="color:var(--ink)">2294 × 1029 px</strong>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px">設計主題 <span style="opacity:.55;font-weight:400">（例如：聖誕節、春季花園）</span></div>
+          <div style="padding:12px 14px;border:1.5px solid var(--coral);border-radius:10px;font-size:16px;background:#fff">春天櫻花</div>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px">風格</div>
+          <div style="padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;background:#fff;color:var(--ink-2)">日式簡約</div>
+        </div>
+        <div style="margin-bottom:22px">
+          <div style="font-size:15px;font-weight:600;margin-bottom:6px">主要文字</div>
+          <div style="padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;background:#fff;min-height:52px;color:var(--ink-2)">Sakura Café<br>春限定</div>
+        </div>
+
+        <!-- progress -->
+        <div style="margin-bottom:20px">
+          <div style="height:8px;background:#F6EDDC;border-radius:999px;overflow:hidden">
+            <div style="height:100%;width:62%;background:linear-gradient(90deg,var(--coral),#FFB88C);border-radius:999px"></div>
+          </div>
+          <div style="font-size:14px;color:var(--ink-2);margin-top:8px">🎨 AI 正在幫你畫…（別急，好東西值得等）</div>
+        </div>
+
+        <div style="padding:16px;background:var(--coral);color:#fff;border-radius:12px;text-align:center;font-weight:700;font-size:18px">
+          ✨ 開始生成矩形圖
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>Stage 1A · AI 生成</span>
+    <span class="slide-num">06</span>
+  </div>
+</section>
+
+<!-- ========== Slide 7 : Stage 1B walk ========== -->
+<section data-screen-label="07 Stage 1B 自行上傳">
+  <div style="position:absolute;inset:0;padding:70px 100px;display:grid;grid-template-columns:1.15fr 1fr;gap:60px;align-items:center">
+    <!-- left: upload mock -->
+    <div class="mock">
+      <div class="mock-bar">
+        <span class="d" style="background:#FF8C69"></span><span class="d" style="background:#FFD98C"></span><span class="d" style="background:#A8D8C8"></span>
+        <span class="url">cup-designer.local/ · Step 2</span>
+      </div>
+      <div style="padding:32px 34px;">
+        <div style="display:flex;gap:8px;margin-bottom:22px">
+          <div style="padding:10px 20px;background:#F6EDDC;color:var(--ink-2);border-radius:999px;font-size:16px">🤖 AI 幫我生成</div>
+          <div style="padding:10px 20px;background:#6DA892;color:#fff;border-radius:999px;font-weight:700;font-size:16px">📤 自行上傳</div>
+        </div>
+
+        <div style="padding:14px 18px;background:#EFF8F3;border-radius:10px;font-size:15px;color:var(--ink-2);margin-bottom:22px">
+          📐 建議尺寸：<strong style="color:var(--ink)">2294 × 1029 px</strong>
+        </div>
+
+        <!-- drop zone -->
+        <div style="padding:44px 24px;border:2.5px dashed #6DA892;border-radius:16px;background:#F7FBF9;text-align:center">
+          <div style="font-size:56px">🖼️</div>
+          <div style="font-size:18px;font-weight:600;margin-top:10px">sakura-cafe-spring.png</div>
+          <div style="font-size:14px;color:var(--ink-2);margin-top:4px">2294 × 1029 px · 412 KB · PNG</div>
+          <div style="margin-top:14px;display:inline-flex;gap:8px;align-items:center;padding:6px 14px;background:#DCEFE4;border-radius:999px;color:#2A6B4F;font-size:13px;font-weight:600">
+            ✓ 尺寸正確 · 比例 2.229 符合
+          </div>
+        </div>
+
+        <div style="margin-top:18px;padding:14px 18px;background:#EFF8F3;border:1.5px solid #CFE5DA;border-radius:12px;color:#2A6B4F;font-weight:600;text-align:center">
+          🎉 圖片驗證通過！繼續下一步吧
+        </div>
+      </div>
+    </div>
+
+    <!-- right: explainer -->
+    <div>
+      <div class="kicker" style="color:#6DA892">ROUTE · 1B</div>
+      <h2 class="display" style="font-size:72px;margin:16px 0 24px">已經有設計？<br>直接拖進來。</h2>
+
+      <div style="display:grid;gap:18px;font-size:22px">
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <span style="font-size:28px">①</span>
+          <div><strong>按照建議尺寸</strong>在 Canva / PS / Figma 做好你的設計，<br>輸出 PNG 或 JPG。</div>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <span style="font-size:28px">②</span>
+          <div><strong>拖進虛線框</strong>或點擊選擇檔案。</div>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <span style="font-size:28px">③</span>
+          <div><strong>系統自動檢查</strong>尺寸與比例，通過才能進下一步。</div>
+        </div>
+      </div>
+
+      <div style="margin-top:30px;padding:22px 26px;background:#FDEBE3;border-left:5px solid var(--coral);border-radius:14px;font-size:19px;color:var(--ink-2);line-height:1.7">
+        <strong style="color:var(--coral)">常見錯誤</strong><br>
+        尺寸差幾像素也會被擋——這是為了印出來不變形。<br>
+        系統會告訴你差多少，回去調整後重新上傳即可。
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>Stage 1B · 自行上傳</span>
+    <span class="slide-num">07</span>
+  </div>
+</section>
+
+<!-- ========== Slide 8 : Step 3 convert ========== -->
+<section data-screen-label="08 Step 3 轉換扇形圖">
+  <div style="position:absolute;inset:0;padding:80px 120px">
+    <div class="steppill mint"><span class="num">3</span>轉換扇形圖</div>
+    <h2 class="display" style="font-size:80px;margin:28px 0 16px">一鍵彎曲，<br>數學會幫你搞定。</h2>
+
+    <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:70px;margin-top:50px;align-items:center">
+      <!-- visual math -->
+      <div style="position:relative;padding:40px;background:#fff;border-radius:24px;border:2px solid var(--line)">
+        <!-- rectangle -->
+        <div style="aspect-ratio:2.23/1;background:linear-gradient(135deg,#FFE5D4 0%,#FFD0B0 100%);border-radius:12px;position:relative;display:flex;align-items:center;justify-content:center">
+          <div style="font-family:'Noto Serif TC',serif;font-size:68px;font-weight:900;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.15)">SAKURA</div>
+          <div style="position:absolute;top:10px;left:14px;font-size:12px;color:#B86240" class="mono">2294×1029 px</div>
+        </div>
+
+        <!-- arrow with formula -->
+        <div style="display:flex;justify-content:center;align-items:center;gap:18px;margin:30px 0;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ink-2)">
+          <span></span>
+          <span style="font-size:36px;color:var(--coral);font-weight:900">↓</span>
+          <span>POLAR WARP</span>
+        </div>
+
+        <!-- fan shape -->
+        <div style="display:flex;justify-content:center">
+          <svg viewBox="0 0 540 220" style="width:100%;max-width:540px">
+            <path d="M 60,220 A 680,680 0 0 1 480,220 L 390,20 A 460,460 0 0 0 150,20 Z"
+                  fill="url(#sakuraGrad)" stroke="#E8DCC8" stroke-width="2"/>
+            <defs>
+              <linearGradient id="sakuraGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#FFE5D4"/>
+                <stop offset="100%" stop-color="#FFD0B0"/>
+              </linearGradient>
+            </defs>
+            <text x="270" y="135" text-anchor="middle" font-family="'Noto Serif TC',serif" font-weight="900" font-size="44" fill="#fff" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.12))">SAKURA</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- facts -->
+      <div>
+        <h3 style="font-size:28px;margin:0 0 20px" class="display">後端做了什麼</h3>
+        <div style="display:grid;gap:14px">
+          <div style="padding:18px 22px;background:var(--cream);border-radius:12px;font-size:20px">
+            <strong style="color:var(--coral)">讀取參數</strong>：你選的杯型數據
+          </div>
+          <div style="padding:18px 22px;background:var(--cream);border-radius:12px;font-size:20px">
+            <strong style="color:var(--coral)">極座標映射</strong>：每個像素重新分配到扇形座標
+          </div>
+          <div style="padding:18px 22px;background:var(--cream);border-radius:12px;font-size:20px">
+            <strong style="color:var(--coral)">輸出 PNG</strong>：扇形圖透明背景、直接能印
+          </div>
+        </div>
+
+        <div style="margin-top:34px;padding:22px 26px;background:#EFF8F3;border:2px solid var(--mint);border-radius:14px">
+          <div class="kicker" style="color:#2A6B4F;font-size:14px;margin-bottom:8px">💡 重要</div>
+          <p style="margin:0;font-size:20px;line-height:1.6"><strong>這一步不用 AI、不花 API 費用。</strong><br>純數學，想轉幾次就轉幾次。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>Step 3 · 轉換扇形圖</span>
+    <span class="slide-num">08</span>
+  </div>
+</section>
+
+<!-- ========== Slide 9 : Step 4 download ========== -->
+<section data-screen-label="09 Step 4 下載">
+  <div style="position:absolute;inset:0;padding:80px 120px">
+    <div class="steppill"><span class="num">4</span>下載你的檔案</div>
+    <h2 class="display" style="font-size:80px;margin:28px 0 16px">兩個檔案一起拿。</h2>
+    <p style="font-size:24px;color:var(--ink-2);margin:0 0 50px">矩形圖是「設計原稿」，之後要修從它改；扇形圖是「印刷檔」，直接交給印刷廠。</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:20px">
+      <!-- rect -->
+      <div class="mock" style="padding:40px 36px">
+        <div style="aspect-ratio:2.23/1;background:linear-gradient(135deg,#FFE5D4,#FFB88C);border-radius:14px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+          <div style="font-family:'Noto Serif TC',serif;font-size:96px;font-weight:900;color:#fff;text-shadow:0 4px 12px rgba(61,43,31,.2)">SAKURA</div>
+          <div class="mono" style="position:absolute;bottom:14px;right:18px;color:#fff;font-size:14px;opacity:.85">PNG · 矩形</div>
+        </div>
+        <div style="margin-top:22px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:26px;font-weight:800">矩形圖</div>
+            <div class="mono" style="font-size:14px;color:var(--ink-2);margin-top:4px">8oz_冷熱杯_矩形圖_20260422_143052.png</div>
+          </div>
+          <div style="padding:14px 22px;background:var(--coral);color:#fff;border-radius:999px;font-weight:700">⬇ 下載</div>
+        </div>
+      </div>
+
+      <!-- fan -->
+      <div class="mock" style="padding:40px 36px">
+        <div style="aspect-ratio:2.23/1;background:#FFF4E3;border-radius:14px;display:flex;align-items:center;justify-content:center;position:relative">
+          <svg viewBox="0 0 540 240" style="width:88%;height:auto">
+            <path d="M 60,230 A 680,680 0 0 1 480,230 L 390,28 A 460,460 0 0 0 150,28 Z"
+                  fill="url(#sakuraGrad2)" stroke="#E8DCC8" stroke-width="2"/>
+            <defs>
+              <linearGradient id="sakuraGrad2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#FFE5D4"/>
+                <stop offset="100%" stop-color="#FFB88C"/>
+              </linearGradient>
+            </defs>
+            <text x="270" y="150" text-anchor="middle" font-family="'Noto Serif TC',serif" font-weight="900" font-size="56" fill="#fff" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,.15))">SAKURA</text>
+          </svg>
+          <div class="mono" style="position:absolute;bottom:14px;right:18px;color:var(--ink-2);font-size:14px">PNG · 扇形</div>
+        </div>
+        <div style="margin-top:22px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:26px;font-weight:800">扇形圖</div>
+            <div class="mono" style="font-size:14px;color:var(--ink-2);margin-top:4px">8oz_冷熱杯_扇形圖_20260422_143052.png</div>
+          </div>
+          <div style="padding:14px 22px;background:var(--mint);color:#2A4A3C;border-radius:999px;font-weight:700">⬇ 下載</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- rules -->
+    <div style="margin-top:50px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+      <div style="padding:22px 26px;background:var(--cream);border-radius:14px">
+        <div class="kicker" style="font-size:13px;margin-bottom:6px">命名</div>
+        <div style="font-size:18px;line-height:1.6">杯型_類型_日期_時分秒<br>檔名自動產生，不會搞混</div>
+      </div>
+      <div style="padding:22px 26px;background:var(--cream);border-radius:14px">
+        <div class="kicker" style="font-size:13px;margin-bottom:6px">保留</div>
+        <div style="font-size:18px;line-height:1.6">登入用戶：保留最後一次<br>匿名用戶：立刻下載，不保留</div>
+      </div>
+      <div style="padding:22px 26px;background:var(--cream);border-radius:14px">
+        <div class="kicker" style="font-size:13px;margin-bottom:6px">重新下載</div>
+        <div style="font-size:18px;line-height:1.6">保留期間可回頭下載<br>同次操作兩檔時間戳一致</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>Step 4 · 下載</span>
+    <span class="slide-num">09</span>
+  </div>
+</section>
+
+<!-- ========== Slide 10 : FAQ ========== -->
+<section data-screen-label="10 常見問題">
+  <div style="position:absolute;inset:0;padding:90px 140px">
+    <div class="kicker">FAQ</div>
+    <h2 class="display" style="font-size:80px;margin:18px 0 60px">你可能想問…</h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px 48px">
+      <div>
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+          <span style="font-family:'Noto Serif TC',serif;font-weight:900;color:var(--coral);font-size:32px;line-height:1">Q.</span>
+          <div style="font-size:26px;font-weight:700;line-height:1.4">匿名也可以用嗎？</div>
+        </div>
+        <div style="padding-left:48px;font-size:21px;color:var(--ink-2);line-height:1.65">
+          可以，但檔案不保留，必須當下下載。需要歷史紀錄請登入帳號。
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+          <span style="font-family:'Noto Serif TC',serif;font-weight:900;color:var(--coral);font-size:32px;line-height:1">Q.</span>
+          <div style="font-size:26px;font-weight:700;line-height:1.4">同一張矩形圖能轉不同杯型嗎？</div>
+        </div>
+        <div style="padding-left:48px;font-size:21px;color:var(--ink-2);line-height:1.65">
+          技術上可，但強烈建議不要：每個杯型最佳尺寸不同，換杯型請重做矩形。
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+          <span style="font-family:'Noto Serif TC',serif;font-weight:900;color:var(--coral);font-size:32px;line-height:1">Q.</span>
+          <div style="font-size:26px;font-weight:700;line-height:1.4">轉出來的顏色會跑掉嗎？</div>
+        </div>
+        <div style="padding-left:48px;font-size:21px;color:var(--ink-2);line-height:1.65">
+          不會。Stage 2 只做幾何轉換，不改像素顏色；照你原圖的色彩輸出。
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+          <span style="font-family:'Noto Serif TC',serif;font-weight:900;color:var(--coral);font-size:32px;line-height:1">Q.</span>
+          <div style="font-size:26px;font-weight:700;line-height:1.4">AI 生成要花錢嗎？</div>
+        </div>
+        <div style="padding-left:48px;font-size:21px;color:var(--ink-2);line-height:1.65">
+          Stage 1A 走 AI API，有公司共用額度與個人 Key 機制；Stage 2 完全免費。
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+          <span style="font-family:'Noto Serif TC',serif;font-weight:900;color:var(--coral);font-size:32px;line-height:1">Q.</span>
+          <div style="font-size:26px;font-weight:700;line-height:1.4">上傳的圖尺寸差一點點也不行嗎？</div>
+        </div>
+        <div style="padding-left:48px;font-size:21px;color:var(--ink-2);line-height:1.65">
+          有容差範圍但不寬。印出來會變形的風險太高，請盡量照建議尺寸。
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+          <span style="font-family:'Noto Serif TC',serif;font-weight:900;color:var(--coral);font-size:32px;line-height:1">Q.</span>
+          <div style="font-size:26px;font-weight:700;line-height:1.4">能不能只下載扇形圖？</div>
+        </div>
+        <div style="padding-left:48px;font-size:21px;color:var(--ink-2);line-height:1.65">
+          可以分開下，但建議兩個都留：矩形圖之後修圖用，扇形圖印刷用。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span><span class="dot"></span>常見問題</span>
+    <span class="slide-num">10</span>
+  </div>
+</section>
+
+<!-- ========== Slide 11 : Closing ========== -->
+<section data-screen-label="11 結尾">
+  <div class="blob" style="width:560px;height:560px;background:var(--coral);top:-160px;left:-160px;opacity:.3"></div>
+  <div class="blob" style="width:440px;height:440px;background:var(--mint);bottom:-140px;right:-100px;opacity:.5"></div>
+
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 160px">
+    <div class="kicker">GO DESIGN</div>
+    <h2 class="display" style="font-size:150px;margin:28px 0 40px;line-height:1">
+      做設計，<br>讓<span style="color:var(--coral)">數學</span>去苦惱。
+    </h2>
+    <p style="font-size:32px;color:var(--ink-2);max-width:900px;line-height:1.55;margin:0">
+      四步驟，五分鐘。選杯型、做矩形、轉扇形、下載。<br>
+      有卡住的地方，直接在群組敲一聲——我們會把 UX 變得更順手。
+    </p>
+
+    <div style="display:flex;gap:18px;margin-top:60px;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ink-2)">
+      <span style="padding:12px 22px;background:#fff;border:1.5px solid var(--line);border-radius:999px">cup-designer.local</span>
+      <span style="padding:12px 22px;background:#fff;border:1.5px solid var(--line);border-radius:999px">#support 頻道</span>
+    </div>
+  </div>
+
+  <div style="position:absolute;right:140px;top:50%;transform:translateY(-50%) rotate(-8deg);font-size:260px">🥤</div>
+
+  <div class="footer">
+    <span><span class="dot"></span>謝謝！</span>
+    <span class="slide-num">11</span>
+  </div>
+</section>
+
+</deck-stage>
+
+<!-- ============ Tweaks ============ -->
+<div id="tweaks" style="display:none;position:fixed;right:20px;bottom:20px;width:300px;background:#fff;border:2px solid #E8DCC8;border-radius:16px;padding:18px 20px;font-family:'Noto Sans TC',sans-serif;z-index:10000;box-shadow:0 20px 40px -15px rgba(0,0,0,.25)">
+  <div style="font-weight:800;font-size:16px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+    <span style="width:10px;height:10px;background:#FF8C69;border-radius:50%"></span> Tweaks
+  </div>
+
+  <div style="font-size:12px;color:#6B5544;font-weight:600;letter-spacing:.1em;margin-bottom:8px">主色調</div>
+  <div style="display:flex;gap:8px;margin-bottom:16px" id="themeSwatches"></div>
+
+  <div style="font-size:12px;color:#6B5544;font-weight:600;letter-spacing:.1em;margin-bottom:8px">背景色</div>
+  <div style="display:flex;gap:8px;margin-bottom:16px" id="bgSwatches"></div>
+
+  <div style="font-size:12px;color:#6B5544;font-weight:600;letter-spacing:.1em;margin-bottom:8px">字型風格</div>
+  <div style="display:flex;gap:6px" id="fontBtns">
+    <button data-font="serif" style="flex:1;padding:8px;border:1.5px solid #E8DCC8;background:#fff;border-radius:8px;font-family:'Noto Serif TC',serif;font-weight:700;cursor:pointer">襯線</button>
+    <button data-font="sans" style="flex:1;padding:8px;border:1.5px solid #E8DCC8;background:#fff;border-radius:8px;font-family:'Noto Sans TC',sans-serif;font-weight:700;cursor:pointer">無襯</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ----- tweak mode handshake -----
+  const panel = document.getElementById('tweaks');
+
+  window.addEventListener('message', e => {
+    if (!e.data || !e.data.type) return;
+    if (e.data.type === '__activate_edit_mode')   panel.style.display = 'block';
+    if (e.data.type === '__deactivate_edit_mode') panel.style.display = 'none';
+  });
+  window.parent.postMessage({type:'__edit_mode_available'}, '*');
+
+  // ----- theme swatches -----
+  const themes = [
+    {name:'珊瑚橘', coral:'#FF8C69', mint:'#A8D8C8', accent:'#FFB88C'},
+    {name:'夕陽', coral:'#E85A4F', mint:'#F2C6A7', accent:'#F4A261'},
+    {name:'藍綠', coral:'#2A9D8F', mint:'#B8E0D2', accent:'#76C7B7'},
+    {name:'紫粉', coral:'#B66FC5', mint:'#F1CBE8', accent:'#D49BDF'},
+    {name:'墨綠', coral:'#386641', mint:'#A7C957', accent:'#6A994E'}
+  ];
+  const themeRow = document.getElementById('themeSwatches');
+  themes.forEach(t => {
+    const b = document.createElement('button');
+    b.title = t.name;
+    b.style.cssText = `width:42px;height:42px;border-radius:10px;border:2px solid #E8DCC8;background:${t.coral};cursor:pointer;position:relative`;
+    b.innerHTML = `<span style="position:absolute;bottom:-3px;right:-3px;width:16px;height:16px;background:${t.mint};border-radius:50%;border:2px solid #fff"></span>`;
+    b.onclick = () => {
+      document.documentElement.style.setProperty('--coral', t.coral);
+      document.documentElement.style.setProperty('--mint', t.mint);
+      document.documentElement.style.setProperty('--accent', t.accent);
+      window.parent.postMessage({type:'__edit_mode_set_keys', edits:{
+        '--coral': t.coral, '--mint': t.mint, '--accent': t.accent
+      }}, '*');
+    };
+    themeRow.appendChild(b);
+  });
+
+  const bgs = [
+    {name:'暖奶油', bg:'#FFFBF4', cream:'#FFF4E3', line:'#E8DCC8'},
+    {name:'純白', bg:'#FFFFFF', cream:'#F7F3EC', line:'#E5E5E5'},
+    {name:'薄荷淺', bg:'#F6FBF8', cream:'#E9F3ED', line:'#D5E4DB'},
+    {name:'夜模式', bg:'#1F1915', cream:'#2A2320', line:'#3A3128'}
+  ];
+  const bgRow = document.getElementById('bgSwatches');
+  bgs.forEach(b => {
+    const el = document.createElement('button');
+    el.title = b.name;
+    el.style.cssText = `width:42px;height:42px;border-radius:10px;border:2px solid #E8DCC8;background:${b.bg};cursor:pointer`;
+    el.onclick = () => {
+      document.documentElement.style.setProperty('--bg', b.bg);
+      document.documentElement.style.setProperty('--cream', b.cream);
+      document.documentElement.style.setProperty('--line', b.line);
+      window.parent.postMessage({type:'__edit_mode_set_keys', edits:{
+        '--bg': b.bg, '--cream': b.cream, '--line': b.line
+      }}, '*');
+    };
+    bgRow.appendChild(el);
+  });
+
+  document.querySelectorAll('#fontBtns button').forEach(btn => {
+    btn.onclick = () => {
+      const mode = btn.dataset.font;
+      const els = document.querySelectorAll('.display, h1.display, h2.display, h3.display');
+      els.forEach(el => {
+        el.style.fontFamily = mode === 'serif' ? '"Noto Serif TC",serif' : '"Noto Sans TC",sans-serif';
+      });
+    };
+  });
+})();
+</script>
+
+</body>
+</html>

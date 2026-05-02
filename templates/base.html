@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site_title }} ☕{% endblock %}</title>
+  {% if ui_font_family == 'Noto Sans TC' %}
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  {% elif ui_font_family == 'Noto Serif TC' %}
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&display=swap" rel="stylesheet">
+  {% elif ui_font_family == 'Roboto' %}
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  {% elif ui_font_family == 'Playfair Display' %}
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&display=swap" rel="stylesheet">
+  {% else %}
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  {% endif %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <style>
+    body {
+      font-family: '{{ ui_font_family }}', 'Noto Sans TC', sans-serif;
+      font-size: {{ ui_font_size }}px;
+      {% if ui_font_color %}color: {{ ui_font_color }};{% endif %}
+    }
+    {% if ui_font_color %}
+    :root { --text: {{ ui_font_color }}; }
+    {% endif %}
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body data-theme="{{ ui_theme }}">
+
+<!-- 背景泡泡 -->
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+
+<!-- ── Header ── -->
+<header>
+  <a href="/" class="logo">
+    <div class="logo-icon">☕</div>
+    <span>{{ site_title }}</span>
+  </a>
+
+  <!-- 桌面導覽 -->
+  <nav>
+    <a href="/" class="{% block nav_home %}{% endblock %}">首頁</a>
+    <a href="/guide" class="{% block nav_how %}{% endblock %}" target="_blank" rel="noopener">使用說明</a>
+    <a href="/admin" class="{% block nav_admin %}{% endblock %}">管理後台</a>
+  </nav>
+
+  <!-- 主題切換 + 登入（桌面） -->
+  <div style="display:flex; align-items:center; gap:10px;">
+    <div class="theme-switcher">
+      <div class="theme-dot" data-t="warm"     data-label="暖橘"></div>
+      <div class="theme-dot" data-t="ocean"    data-label="深海藍"></div>
+      <div class="theme-dot" data-t="lavender" data-label="薰衣草"></div>
+      <div class="theme-dot" data-t="matcha"   data-label="抹茶"></div>
+      <div class="theme-dot" data-t="berry"    data-label="莓果"></div>
+      <div class="theme-dot" data-t="business" data-label="專業商務"></div>
+      <div class="theme-dot" data-t="artistic" data-label="藝術感"></div>
+      <div class="theme-dot" data-t="neon"     data-label="霓虹色彩"></div>
+    </div>
+    <div id="authBtn">
+      <button class="btn-login" onclick="location.href='/login'">登入</button>
+    </div>
+  </div>
+
+  <!-- 漢堡（手機） -->
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+
+  <!-- 手機展開選單 -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">首頁</a>
+    <a href="/guide" target="_blank" rel="noopener">使用說明</a>
+    <a href="/admin">管理後台</a>
+    <div class="mobile-theme-row">
+      風格：
+      <div class="theme-dot" data-t="warm"     data-label="暖橘"></div>
+      <div class="theme-dot" data-t="ocean"    data-label="深海藍"></div>
+      <div class="theme-dot" data-t="lavender" data-label="薰衣草"></div>
+      <div class="theme-dot" data-t="matcha"   data-label="抹茶"></div>
+      <div class="theme-dot" data-t="berry"    data-label="莓果"></div>
+      <div class="theme-dot" data-t="business" data-label="專業商務"></div>
+      <div class="theme-dot" data-t="artistic" data-label="藝術感"></div>
+      <div class="theme-dot" data-t="neon"     data-label="霓虹色彩"></div>
+    </div>
+    <div id="authBtnMobile">
+      <button class="btn-login" onclick="location.href='/login'">登入</button>
+    </div>
+  </div>
+</header>
+
+{% block content %}{% endblock %}
+
+<!-- Footer -->
+<footer>
+  ☕ {{ site_title }} &nbsp;·&nbsp; 矩形轉扇形圖系統
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
