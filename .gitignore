@@ -5,3 +5,5 @@ instance/
 uploads/
 .venv/
 .claude/
+import_db.py
+sql/fanprint_backup.sql

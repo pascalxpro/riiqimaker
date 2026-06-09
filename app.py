@@ -854,8 +854,22 @@ def admin_banner_delete(n):
     return jsonify({'ok': True})
 
 
-# ── DB 初始化（模組載入時執行，適配 Gunicorn / Zeabur）─────────
-init_db()
+# ── DB 初始化（背景執行，避免阻塞 Gunicorn 啟動探測）─────────
+import threading, time as _time
+
+def _deferred_init_db():
+    for attempt in range(5):
+        try:
+            init_db()
+            print(f"[init_db] DB init OK (attempt {attempt+1})")
+            return
+        except Exception as e:
+            print(f"[init_db] attempt {attempt+1} failed: {e}")
+            if attempt < 4:
+                _time.sleep(3)
+    print("[init_db] WARNING: DB init failed after 5 attempts")
+
+threading.Thread(target=_deferred_init_db, daemon=True).start()
 
 
 # ── 本機開發入口 ─────────────────────────────────────
@@ -863,3 +877,4 @@ init_db()
 if __name__ == '__main__':
     is_dev = os.environ.get('FLASK_ENV') != 'production'
     app.run(debug=is_dev, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+
