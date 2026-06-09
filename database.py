@@ -101,6 +101,14 @@ def _init_pg():
                     'INSERT INTO users (username, password_hash, role) VALUES (%s,%s,%s)',
                     ('admin', generate_password_hash(admin_pw), 'admin')
                 )
+            else:
+                # 每次啟動同步 admin 密碼（確保與環境變數一致）
+                admin_pw = os.environ.get('ADMIN_PASSWORD')
+                if admin_pw:
+                    cur.execute(
+                        'UPDATE users SET password_hash = %s WHERE username = %s',
+                        (generate_password_hash(admin_pw), 'admin')
+                    )
         conn.commit()
 
 
