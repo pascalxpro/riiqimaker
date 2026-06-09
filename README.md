@@ -33,7 +33,7 @@
 ### 1. 取得程式碼
 
 ```bash
-git clone https://github.com/seebox-xpro/riiqimaker.git
+git clone https://github.com/pascalxpro/riiqimaker.git
 cd riiqimaker
 ```
 
