@@ -1,4 +1,4 @@
-# FanPrint — 紙杯扇形展開圖設計系統
+# RiiqiMaker — 紙杯扇形展開圖設計系統
 
 紙杯印刷設計輔助工具，將矩形稿自動轉換為扇形展開圖，並整合 AI 圖像生成功能，適用於印刷廠內部設計流程。
 
@@ -33,8 +33,8 @@
 ### 1. 取得程式碼
 
 ```bash
-git clone https://github.com/seebox-xpro/FanPrint.git
-cd FanPrint
+git clone https://github.com/seebox-xpro/riiqimaker.git
+cd riiqimaker
 ```
 
 ### 2. 建立虛擬環境並安裝套件
@@ -72,7 +72,7 @@ cp .env.example .env
 python app.py
 ```
 
-瀏覽器開啟 http://localhost:500
+瀏覽器開啟 http://localhost:5000
 
 ---
 
@@ -90,7 +90,7 @@ docker-compose up -d --build
 ## 目錄結構
 
 ```
-FanPrint/
+riiqimaker/
 ├── app.py                  # 主程式（Flask 路由、API、圖像轉換邏輯）
 ├── database.py             # DB 初始化、CRUD 函式
 ├── requirements.txt        # Python 套件清單

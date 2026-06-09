@@ -3,7 +3,7 @@ version: "3.9"
 services:
   flask:
     build: .
-    container_name: cup-app
+    container_name: riiqimaker
     restart: unless-stopped
     env_file:
       - .env

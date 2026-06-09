@@ -76,7 +76,7 @@ def _init_pg():
                 )
             for k, v in [
                 ('gemini_api_key', ''), ('ai_model', 'imagen-3.0-generate-002'), ('hf_api_key', ''),
-                ('site_title', '杯杯設計工坊'),
+                ('site_title', 'RiiqiMaker'),
                 ('ui_theme', 'warm'), ('ui_font_family', 'Nunito'),
                 ('ui_font_color', ''), ('ui_font_size', '16'),
             ]:

@@ -1,4 +1,4 @@
-# 矩形轉扇形圖
+# RiiqiMaker
 
 ## 專案概述
 Python Flask 應用程式，將矩形圖像轉換為扇形圖，整合 PostgreSQL 資料儲存、Gemini AI 輔助、圖片上傳管理。
@@ -20,11 +20,11 @@ Python Flask 應用程式，將矩形圖像轉換為扇形圖，整合 PostgreSQ
 ```bash
 docker compose up -d --build    # 建置並啟動
 docker compose restart          # 重啟不重建
-docker compose logs -f cup-app  # 查看 log
+docker compose logs -f riiqimaker  # 查看 log
 ```
 
 ### 部署注意事項
-- container 名稱：`cup-app`，對外 port：`5100`
+- container 名稱：`riiqimaker`，對外 port：`5100`
 - 環境變數從 `.env` 讀取（`env_file: .env`）
 - 必須設定 `SECRET_KEY` 環境變數，未設定時應用程式**拒絕啟動**
 - 上傳圖片掛載於 `./uploads`（host 路徑）

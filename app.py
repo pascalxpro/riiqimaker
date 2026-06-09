@@ -1,5 +1,8 @@
 import os, math, time, io
 from functools import wraps
+from dotenv import load_dotenv
+load_dotenv()  # 本機開發讀 .env，Zeabur/Docker 由平台注入環境變數
+
 from flask import Flask, render_template, request, jsonify, send_from_directory, abort, session, redirect, url_for
 from database import (init_db, get_cups, get_cup_by_id,
                       get_active_prompt, save_prompt,
@@ -517,7 +520,7 @@ def admin_toggle_user(user_id):
 @app.context_processor
 def inject_globals():
     return {
-        'site_title':    get_ai_setting('site_title') or '杯杯設計工坊',
+        'site_title':    get_ai_setting('site_title') or 'RiiqiMaker',
         'ui_theme':      get_ai_setting('ui_theme') or 'warm',
         'ui_font_family': get_ai_setting('ui_font_family') or 'Nunito',
         'ui_font_color': get_ai_setting('ui_font_color') or '',
@@ -851,11 +854,12 @@ def admin_banner_delete(n):
     return jsonify({'ok': True})
 
 
-# ── 啟動 ──────────────────────────────────────────────────
+# ── DB 初始化（模組載入時執行，適配 Gunicorn / Zeabur）─────────
+init_db()
+
+
+# ── 本機開發入口 ─────────────────────────────────────
 
 if __name__ == '__main__':
-    from dotenv import load_dotenv
-    load_dotenv()
-    init_db()
     is_dev = os.environ.get('FLASK_ENV') != 'production'
-    app.run(debug=is_dev, host='0.0.0.0', port=5000)
+    app.run(debug=is_dev, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

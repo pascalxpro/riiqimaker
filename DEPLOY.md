@@ -1,16 +1,16 @@
-# 部署指南
+# RiiqiMaker 部署指南
 
 ## 正式機資訊
-- NAS 路徑：`\\HJ-02\docker\cup-app\`
-- Container Manager 專案：`cup-app`
-- 對外 URL：https://cup.kiseki.me
+- NAS 路徑：`\\HJ-02\docker\riiqimaker\`
+- Container Manager 專案：`riiqimaker`
+- 對外 URL：https://riiqimaker.kiseki.me
 
 ---
 
 ## 部署步驟
 
 ### 1. 複製檔案到 NAS
-將以下檔案複製到 `\\HJ-02\docker\cup-app\`：
+將以下檔案複製到 `\\HJ-02\docker\riiqimaker\`：
 ```
 app.py
 database.py
@@ -34,7 +34,7 @@ static/
 
 ### 4. 重建容器
 在 Container Manager 中：
-1. 停止 `cup-app` 專案
+1. 停止 `riiqimaker` 專案
 2. 刪除舊容器（不刪除 volumes）
 3. 重新建置並啟動
 
@@ -44,8 +44,8 @@ static/
 
 | 步驟 | 說明 |
 |------|------|
-| 1 | 瀏覽 https://cup.kiseki.me/login |
-| 2 | 帳號：`admin`　密碼：`RuiXing@2026!` |
+| 1 | 瀏覽 https://riiqimaker.kiseki.me/login |
+| 2 | 帳號：`admin`　密碼：見 `.env` 中的 `ADMIN_PASSWORD` |
 | 3 | 進入後台 → **修改我的密碼** → 立即改成新密碼 |
 | 4 | 視需要新增其他帳號 |
 
