@@ -290,20 +290,21 @@ def canva_create_design():
         img.save(buf, format='PNG')
         buf.seek(0)
 
-        # Step 2: 上傳到 Canva Asset API
+        # Step 2: 上傳到 Canva Asset API（octet-stream + Asset-Upload-Metadata header）
+        import json as _json
+        asset_name = f'Riiqi {cup_name} 底圖'[:50]  # Canva 限制 50 字元
+        upload_metadata = _json.dumps({
+            'name_base64': base64.b64encode(asset_name.encode('utf-8')).decode('ascii'),
+        })
         upload_headers = {
             'Authorization': headers['Authorization'],
+            'Content-Type': 'application/octet-stream',
+            'Asset-Upload-Metadata': upload_metadata,
         }
-        # Canva Asset Upload 用 multipart
         asset_resp = http_requests.post(
             f'{CANVA_API_BASE}/asset-uploads',
             headers=upload_headers,
-            data={
-                'name_base64': base64.b64encode(f'Riiqi {cup_name} 底圖'.encode()).decode(),
-            },
-            files={
-                'file': (f'blank_{w_px}x{h_px}.png', buf, 'image/png'),
-            },
+            data=buf.read(),
             timeout=30,
         )
 
