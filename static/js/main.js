@@ -743,24 +743,8 @@ function _pollExportStatus(jobId, fill, msg, progress) {
           fill.style.width = '100%';
           msg.textContent = '✅ 匯出完成！';
 
-          // 自動將 Canva 的圖片帶入轉換流程（复用現有的 generatedFilename + convertSection 遏輯）
-          generatedFilename = data.filename;
-
-          // 顯示轉換區
-          const convertSection = document.getElementById('convertSection');
-          convertSection.style.display = '';
-          const mini = document.getElementById('rectMiniPreview');
-          mini.src = data.url;
-          mini.style.width  = '180px';
-          mini.style.height = '104px';
-
-          const btnConvert = document.getElementById('btnConvert');
-          btnConvert.disabled = false;
-          btnConvert.classList.add('btn-pulse');
-          void convertSection.offsetWidth;
-
-          // 步驟更新
-          document.getElementById('step2')?.classList.add('active');
+          // 複用共用流程：設定矩形圖預覽、下載連結、顯示轉換區
+          onRectReady(data.filename);
 
           // 慶祝
           const cel = document.getElementById('canvaCelebrate');
@@ -768,7 +752,8 @@ function _pollExportStatus(jobId, fill, msg, progress) {
 
           setTimeout(() => {
             progress.style.display = 'none';
-            convertSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const convertSection = document.getElementById('convertSection');
+            if (convertSection) convertSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }, 800);
           return;
         }
