@@ -94,6 +94,16 @@ def _init_pg():
                     created_at    TIMESTAMPTZ DEFAULT NOW()
                 );
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS banners (
+                    id         SERIAL PRIMARY KEY,
+                    slot       INTEGER NOT NULL UNIQUE,
+                    image_data BYTEA   NOT NULL,
+                    mime_type  TEXT    NOT NULL DEFAULT 'image/jpeg',
+                    size_kb    INTEGER NOT NULL DEFAULT 0,
+                    updated_at TIMESTAMPTZ DEFAULT NOW()
+                );
+            """)
             cur.execute('SELECT COUNT(*) FROM users')
             if cur.fetchone()[0] == 0:
                 admin_pw = os.environ.get('ADMIN_PASSWORD', 'admin1234')
@@ -207,6 +217,16 @@ def _init_sq():
                 role          TEXT    NOT NULL DEFAULT 'user',
                 is_active     INTEGER NOT NULL DEFAULT 1,
                 created_at    TEXT    DEFAULT (datetime('now','localtime'))
+            );
+        """)
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS banners (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                slot       INTEGER NOT NULL UNIQUE,
+                image_data BLOB    NOT NULL,
+                mime_type  TEXT    NOT NULL DEFAULT 'image/jpeg',
+                size_kb    INTEGER NOT NULL DEFAULT 0,
+                updated_at TEXT    DEFAULT (datetime('now','localtime'))
             );
         """)
         if c.execute('SELECT COUNT(*) FROM users').fetchone()[0] == 0:
@@ -404,3 +424,73 @@ def get_active_prompt():
         with _sq_conn() as c:
             row = c.execute('SELECT body FROM prompt_templates WHERE is_active=1 ORDER BY id DESC LIMIT 1').fetchone()
     return dict(row)['body'] if row else DEFAULT_PROMPT
+
+
+# ── Banner 圖片（存 DB 避免 ephemeral filesystem 問題）────
+
+def save_banner(slot, image_bytes, mime_type='image/jpeg'):
+    """儲存 Banner 圖片到資料庫"""
+    size_kb = len(image_bytes) // 1024
+    if DATABASE_URL:
+        import psycopg2
+        with _pg_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """INSERT INTO banners (slot, image_data, mime_type, size_kb, updated_at)
+                       VALUES (%s, %s, %s, %s, NOW())
+                       ON CONFLICT (slot) DO UPDATE
+                       SET image_data = EXCLUDED.image_data,
+                           mime_type  = EXCLUDED.mime_type,
+                           size_kb    = EXCLUDED.size_kb,
+                           updated_at = NOW()""",
+                    (slot, psycopg2.Binary(image_bytes), mime_type, size_kb)
+                )
+            conn.commit()
+    else:
+        with _sq_conn() as c:
+            c.execute(
+                """INSERT INTO banners (slot, image_data, mime_type, size_kb)
+                   VALUES (?, ?, ?, ?)
+                   ON CONFLICT (slot) DO UPDATE
+                   SET image_data = excluded.image_data,
+                       mime_type  = excluded.mime_type,
+                       size_kb    = excluded.size_kb,
+                       updated_at = datetime('now','localtime')""",
+                (slot, image_bytes, mime_type, size_kb)
+            )
+    return size_kb
+
+
+def get_banner(slot):
+    """從資料庫讀取 Banner 圖片，回傳 (image_bytes, mime_type) 或 None"""
+    if DATABASE_URL:
+        with _pg_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute('SELECT image_data, mime_type FROM banners WHERE slot=%s', (slot,))
+                row = cur.fetchone()
+        if row:
+            return (bytes(row[0]), row[1])
+    else:
+        with _sq_conn() as c:
+            row = c.execute('SELECT image_data, mime_type FROM banners WHERE slot=?', (slot,)).fetchone()
+        if row:
+            return (row[0], row[1])
+    return None
+
+
+def get_banner_status():
+    """取得所有 Banner 狀態"""
+    result = []
+    for n in (1, 2, 3):
+        if DATABASE_URL:
+            with _pg_conn() as conn:
+                with conn.cursor() as cur:
+                    cur.execute('SELECT size_kb FROM banners WHERE slot=%s', (n,))
+                    row = cur.fetchone()
+        else:
+            with _sq_conn() as c:
+                row = c.execute('SELECT size_kb FROM banners WHERE slot=?', (n,)).fetchone()
+        exists = row is not None
+        size_kb = row[0] if row else 0
+        result.append({'n': n, 'exists': exists, 'size_kb': size_kb})
+    return result

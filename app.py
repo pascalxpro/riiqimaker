@@ -3,12 +3,13 @@ from functools import wraps
 from dotenv import load_dotenv
 load_dotenv()  # 本機開發讀 .env，Zeabur/Docker 由平台注入環境變數
 
-from flask import Flask, render_template, request, jsonify, send_from_directory, abort, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, send_from_directory, abort, session, redirect, url_for, Response
 from database import (init_db, get_cups, get_cup_by_id,
                       get_active_prompt, save_prompt,
                       update_cup, get_ai_setting, set_ai_setting,
                       verify_user, change_password, get_all_users,
-                      create_user, toggle_user_active)
+                      create_user, toggle_user_active,
+                      save_banner, get_banner, get_banner_status)
 from canva import canva_bp
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
@@ -198,7 +199,7 @@ def index():
     for c in cups:
         c['w_px'], c['h_px'] = _compute_dims(c['outer_r'], c['inner_r'], c['theta_deg'])
     banner_exists = [
-        os.path.isfile(os.path.join(BANNER_FOLDER, f'banner{n}.jpg'))
+        get_banner(n) is not None
         for n in (1, 2, 3)
     ]
     canva_mode = get_ai_setting('canva_mode') or 'popup'
@@ -778,26 +779,22 @@ def serve_upload(filename):
 
 @app.route('/banner/<int:n>')
 def banner_image(n):
-    """提供輪播 Banner 圖片"""
+    """提供 Banner 圖片（從資料庫讀取）"""
     if n not in (1, 2, 3):
         abort(404)
-    fname = f'banner{n}.jpg'
-    path = os.path.join(BANNER_FOLDER, fname)
-    if not os.path.isfile(path):
+    data = get_banner(n)
+    if not data:
         abort(404)
-    return send_from_directory(BANNER_FOLDER, fname)
+    image_bytes, mime_type = data
+    return Response(image_bytes, mimetype=mime_type,
+                    headers={'Cache-Control': 'public, max-age=3600'})
 
 
 @app.route('/api/admin/banner-status')
 @admin_required
 def admin_banner_status():
     """回傳 3 張 banner 是否已上傳"""
-    banners = []
-    for n in (1, 2, 3):
-        path = os.path.join(BANNER_FOLDER, f'banner{n}.jpg')
-        exists = os.path.isfile(path)
-        size_kb = os.path.getsize(path) // 1024 if exists else 0
-        banners.append({'n': n, 'exists': exists, 'size_kb': size_kb})
+    banners = get_banner_status()
     return jsonify({'ok': True, 'banners': banners})
 
 
@@ -843,10 +840,12 @@ def admin_banner_upload():
         # 等比縮放：縮到目標範圍內，不裁切
         img.thumbnail((target_w, target_h), Image.LANCZOS)
 
-    save_path = os.path.join(BANNER_FOLDER, f'banner{n}.jpg')
-    img.save(save_path, 'JPEG', quality=82, optimize=True)
+    # 壓縮後存入資料庫
+    buf = io.BytesIO()
+    img.save(buf, 'JPEG', quality=82, optimize=True)
+    image_bytes = buf.getvalue()
 
-    size_kb = os.path.getsize(save_path) // 1024
+    size_kb = save_banner(n, image_bytes, 'image/jpeg')
     return jsonify({
         'ok': True,
         'size_kb': size_kb,
@@ -858,12 +857,18 @@ def admin_banner_upload():
 @app.route('/api/admin/banner-delete/<int:n>', methods=['POST'])
 @admin_required
 def admin_banner_delete(n):
-    """刪除指定 Banner 圖片"""
+    """刪除指定 Banner 圖片（從資料庫）"""
     if n not in (1, 2, 3):
         return jsonify({'ok': False, 'msg': '無效的 Banner 編號'}), 400
-    path = os.path.join(BANNER_FOLDER, f'banner{n}.jpg')
-    if os.path.isfile(path):
-        os.remove(path)
+    from database import DATABASE_URL, _pg_conn, _sq_conn
+    if DATABASE_URL:
+        with _pg_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute('DELETE FROM banners WHERE slot=%s', (n,))
+            conn.commit()
+    else:
+        with _sq_conn() as c:
+            c.execute('DELETE FROM banners WHERE slot=?', (n,))
     return jsonify({'ok': True})
 
 
