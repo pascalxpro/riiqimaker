@@ -622,7 +622,6 @@ function createCanvaDesign() {
       w_px: selectedCupWPx,
       h_px: selectedCupHPx,
       cup_name: selectedCupName,
-    }),
   })
   .then(r => r.json())
   .then(data => {
@@ -630,8 +629,21 @@ function createCanvaDesign() {
     btn.textContent = '✨ 開啟 Canva 設計';
 
     if (!data.ok) {
-      if (editorWindow) editorWindow.close();
-      _canvaShowError(data.msg || '建立失敗');
+      const errMsg = data.msg || '建立失敗';
+      const errDetail = data.detail || '';
+      console.error('[Canva] create-design error:', errMsg, errDetail);
+      // 在 popup 裡顯示錯誤（而非直接關閉）
+      if (editorWindow && !editorWindow.closed) {
+        editorWindow.document.body.innerHTML = `
+          <div style="text-align:center;padding:40px;font-family:system-ui">
+            <div style="font-size:48px;margin-bottom:16px">❌</div>
+            <h3>建立失敗</h3>
+            <p style="color:#c0392b;max-width:500px;margin:12px auto;word-break:break-all">${errMsg}</p>
+            ${errDetail ? `<pre style="text-align:left;background:#f5f5f5;padding:12px;border-radius:8px;max-width:500px;margin:12px auto;overflow:auto;font-size:12px">${errDetail}</pre>` : ''}
+            <button onclick="window.close()" style="margin-top:20px;padding:10px 24px;background:#7D2AE8;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px">關閉視窗</button>
+          </div>`;
+      }
+      _canvaShowError(errMsg);
       return;
     }
 
@@ -662,7 +674,16 @@ function createCanvaDesign() {
   .catch(err => {
     btn.disabled = false;
     btn.textContent = '✨ 開啟 Canva 設計';
-    if (editorWindow) editorWindow.close();
+    console.error('[Canva] network error:', err);
+    if (editorWindow && !editorWindow.closed) {
+      editorWindow.document.body.innerHTML = `
+        <div style="text-align:center;padding:40px;font-family:system-ui">
+          <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+          <h3>網路錯誤</h3>
+          <p style="color:#c0392b">${err.message || err}</p>
+          <button onclick="window.close()" style="margin-top:20px;padding:10px 24px;background:#7D2AE8;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:14px">關閉視窗</button>
+        </div>`;
+    }
     _canvaShowError('網路錯誤，請重試');
   });
 }
