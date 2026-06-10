@@ -45,11 +45,8 @@
     <span>{{ site_title }}</span>
   </a>
 
-  <!-- 桌面導覽 -->
-  <nav>
-    <a href="/" class="{% block nav_home %}{% endblock %}">首頁</a>
-    <a href="/guide" class="{% block nav_how %}{% endblock %}" target="_blank" rel="noopener">使用說明</a>
-  </nav>
+  <!-- 桌面導覽（已清理，Logo 即可回首頁） -->
+  <nav></nav>
 
   <!-- 主題切換 + 登入（桌面） -->
   <div style="display:flex; align-items:center; gap:10px;">
@@ -73,10 +70,7 @@
     <span></span><span></span><span></span>
   </div>
 
-  <!-- 手機展開選單 -->
   <div class="mobile-menu" id="mobileMenu">
-    <a href="/">首頁</a>
-    <a href="/guide" target="_blank" rel="noopener">使用說明</a>
     <div class="mobile-theme-row">
       風格：
       <div class="theme-dot" data-t="warm"     data-label="暖橘"></div>
@@ -99,6 +93,8 @@
 <!-- Footer -->
 <footer>
   ☕ {{ site_title }} &nbsp;·&nbsp; RiiqiMaker
+  &nbsp;·&nbsp;
+  <a href="/guide" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline; opacity:.7;">📖 使用說明</a>
 </footer>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
