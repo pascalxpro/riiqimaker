@@ -8,27 +8,29 @@
 <script src="deck-stage.js"></script>
 <script type="application/json" id="speaker-notes">
 [
-"哈囉大家好！今天要跟各位介紹我們的『紙杯扇形圖系統』。簡單一句話：你用矩形思考設計、我們幫你彎成印刷用的扇形圖。接下來我會帶你走過一般使用者最常用的四個步驟：選杯型、做矩形圖、轉扇形、下載。全部大概五分鐘就能上手。",
+"哈囉大家好！今天要跟各位介紹我們的『RiiqiMaker 紙杯扇形圖系統』。簡單一句話：你用矩形思考設計、我們幫你彎成印刷用的扇形圖。接下來我會帶你走過四個步驟：選杯型、做矩形圖、轉扇形、下載。全部大概五分鐘就能上手。",
 
-"先講一下為什麼需要這個系統。紙杯其實不是方的，它的展開圖是一個扇形。但你在 Canva、AI 工具裡都是用矩形畫布在設計的。所以以前的流程是：設計師畫完矩形 → 手動在 Illustrator 彎成扇形 → 對齊檢查 → 出圖。現在我們把後半段自動化，你只要專心在矩形裡把設計做好就行。",
+"先講一下為什麼需要這個系統。紙杯其實不是方的，它的展開圖是一個扇形。但你在 Canva、AI 工具裡都是用矩形畫布在設計的。所以以前的流程是：設計師畫完矩形 → 手動在 Illustrator 彎成扇形 → 對齊檢查 → 出圖。現在我們把後半段自動化了。",
 
-"整個流程只有四步。選一個杯型、做一張矩形圖、按一個按鈕轉換、下載。中間不需要你懂數學，也不需要你會 Illustrator。系統會自動幫你算比例、算弧長、做極座標映射。如果你不想自己畫，我們還有 AI 幫你生。",
+"整個流程只有四步。選一個杯型、做一張矩形圖、按一個按鈕轉換、下載。中間不需要你懂數學，也不需要你會 Illustrator。",
 
-"第一步：選杯型。我們內建了 10 種常見杯型，從 8oz 到 24oz，冷熱杯和雙層杯都有。你點一下，系統會馬上告訴你『等一下你的矩形圖要做多大』。譬如 8oz 冷熱杯就是 2294×1029 像素。這個尺寸是根據那個杯型的弧長跟展開比例算出來的，照這個尺寸做，最後印出來才不會變形。",
+"第一步：選杯型。我們內建了 10 種常見杯型，從 8oz 到 24oz，冷熱杯和雙層杯都有。你點一下，系統會自動算好矩形圖該做多大。",
 
-"第二步：做矩形圖。這裡你有兩個選擇。第一個是『AI 幫我生成』，適合沒有設計工具、或想快速試想法的人。第二個是『自行上傳』，適合已經有設計、或是想用 Canva、Photoshop 自己畫的人。兩條路最後產出的都是同一張矩形圖，不會影響後面的轉換。",
+"第二步：做矩形圖。這裡你有三個選擇。第一是 AI 幫你生、第二是自己上傳、第三是用 Canva 線上設計。三條路最後產出的都是同一張矩形圖。",
 
-"先看 AI 生成這條路。你只要填三件事：主題、風格、主要文字。譬如主題寫『春天櫻花』、風格寫『日式簡約』、文字寫你的品牌名。系統會把這些跟我們預先寫好的設計規範（背景全白、Logo 放右上、文字水平置中這些印刷規則）組起來丟給 AI，等個十幾秒，矩形圖就出來了。提醒一下：Prompt 的規範是後端統一管的，你不用煩惱，也沒辦法改，這是為了確保印出來品質一致。",
+"AI 生成只要填主題、風格、文字三個欄位，等十幾秒就出來。Prompt 規範由後端統一管理，確保印刷品質一致。",
 
-"第二條路是自行上傳。你在 Canva 或任何工具做完設計，存成 PNG 或 JPG，拖到這個框裡就好。系統會幫你檢查兩件事：一是尺寸對不對、二是比例對不對。檢查過了會出現一個小慶祝動畫，代表可以進下一步了。如果尺寸錯了它會直接告訴你差多少，你回去改完再上傳就好。",
+"自行上傳就是把你在任何工具做好的 PNG/JPG 拖進來，系統自動檢查尺寸與比例。",
 
-"第三步：轉換扇形圖。這步是整個系統的核心魔法。按下按鈕，後端用 Python 做極座標轉換，把你的矩形彎成該杯型專屬的扇形。要特別講一下：這步完全不用 AI、不花 API 費用，只有數學。所以不管你按幾次、做幾杯，這部分都是免費的。通常幾秒內就完成。",
+"第三條路是 Canva 設計。連接你的 Canva 帳號後，系統會自動建立正確尺寸的畫布，你直接在 Canva 裡設計，完成後一鍵匯回來。",
 
-"第四步：下載。你會拿到兩個檔案：原本的矩形圖、以及轉好的扇形圖。兩個都下載，為什麼？矩形圖是你的『設計原稿』，之後要改字、改圖你從這邊改；扇形圖是『印刷檔』，直接丟給印刷廠就能上機。檔名會自動帶杯型跟時間戳，不會搞混。",
+"第三步：轉換扇形圖。這步是核心魔法——純數學極座標轉換，不用 AI、不花錢，幾秒完成。",
 
-"幾個常被問的：第一，匿名可以用嗎？可以，但檔案不會保留，要立刻下載。有登入的帳號我們會幫你保留最後一次的檔案。第二，同一張矩形圖可以轉不同杯型嗎？技術上可以，但強烈建議不要，因為每個杯型的最佳尺寸不同，換杯型要重做矩形。第三，出來的顏色會不會跑掉？不會，Stage 2 是幾何轉換，不動你的像素顏色。",
+"第四步：下載。拿到矩形圖（設計原稿）和扇形圖（印刷檔）兩個檔案。檔名自動帶杯型和時間戳。",
 
-"最後總結一下。四步驟：選杯型、做矩形、轉扇形、下載。核心價值是把『數學的苦差事』從你身上拿掉，讓你專心做設計。有問題歡迎在群組問，或是看後台的使用手冊。謝謝大家！"
+"FAQ：匿名可用但不保留檔案、換杯型建議重做矩形、顏色不會跑掉、Canva 設計需連接帳號。",
+
+"四步驟，五分鐘。選杯型、做矩形、轉扇形、下載。做設計，讓數學去苦惱。"
 ]
 </script>
 <style>
@@ -244,7 +246,7 @@
         <div style="font-family:'Noto Serif TC',serif;font-weight:900;font-size:120px;line-height:.9;color:var(--coral);opacity:.22;position:absolute;top:10px;right:18px">2</div>
         <div style="font-size:56px">🎨</div>
         <h3 class="display" style="font-size:36px;margin:22px 0 10px">做矩形圖</h3>
-        <p style="color:var(--ink-2);font-size:20px;margin:0;line-height:1.55">AI 幫你生 <strong style="color:var(--coral)">or</strong><br>自行上傳 Canva 檔。</p>
+        <p style="color:var(--ink-2);font-size:20px;margin:0;line-height:1.55">🤖 AI 生成 · 📤 上傳<br>· 🎨 Canva 設計，三選一</p>
       </div>
 
       <div class="mock" style="padding:36px 28px 32px;border-radius:22px;position:relative">
@@ -314,7 +316,7 @@
         <span class="d" style="background:#FF8C69"></span>
         <span class="d" style="background:#FFD98C"></span>
         <span class="d" style="background:#A8D8C8"></span>
-        <span class="url">cup-designer.local/</span>
+        <span class="url">riiqimaker.kiseki.me</span>
       </div>
       <div style="padding:34px 30px;">
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
@@ -365,40 +367,50 @@
 <section data-screen-label="05 Step 2 製作矩形圖">
   <div style="position:absolute;inset:0;padding:90px 140px">
     <div class="steppill"><span class="num">2</span>製作矩形圖</div>
-    <h2 class="display" style="font-size:84px;margin:28px 0 16px">兩條路，自己挑。</h2>
-    <p style="font-size:26px;color:var(--ink-2);margin:0 0 60px">不管走哪條，最後產出的都是同一張矩形圖，不影響後面的轉換。</p>
+    <h2 class="display" style="font-size:84px;margin:28px 0 16px">三條路，自己挑。</h2>
+    <p style="font-size:26px;color:var(--ink-2);margin:0 0 50px">不管走哪條，最後產出的都是同一張矩形圖，不影響後面的轉換。</p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
       <!-- 1A -->
-      <div style="padding:48px 44px;background:#FFF4E3;border-radius:24px;border:2px solid var(--line);position:relative">
-        <div style="position:absolute;top:-20px;left:40px;background:var(--coral);color:#fff;padding:8px 18px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.1em">ROUTE · 1A</div>
-        <div style="font-size:88px">🤖</div>
-        <h3 class="display" style="font-size:50px;margin:14px 0 12px">AI 幫我生成</h3>
-        <p style="font-size:22px;color:var(--ink-2);margin:0 0 24px">填三個欄位，AI 產出你的設計。</p>
-
-        <div style="display:grid;gap:12px;font-size:20px">
-          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid var(--line)"><span class="mono" style="color:var(--coral);font-size:14px">01</span>&nbsp;&nbsp;主題 — 例如「春天櫻花」</div>
-          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid var(--line)"><span class="mono" style="color:var(--coral);font-size:14px">02</span>&nbsp;&nbsp;風格 — 例如「日式簡約」</div>
-          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid var(--line)"><span class="mono" style="color:var(--coral);font-size:14px">03</span>&nbsp;&nbsp;主要文字 — 品牌、標語</div>
+      <div style="padding:36px 30px;background:#FFF4E3;border-radius:24px;border:2px solid var(--line);position:relative">
+        <div style="position:absolute;top:-18px;left:28px;background:var(--coral);color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em">ROUTE · A</div>
+        <div style="font-size:72px">🤖</div>
+        <h3 class="display" style="font-size:40px;margin:12px 0 10px">AI 智慧生成</h3>
+        <p style="font-size:20px;color:var(--ink-2);margin:0 0 20px">填主題、風格、文字三欄，<br>AI 產出設計。</p>
+        <div style="display:grid;gap:10px;font-size:18px">
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid var(--line)">🎯 輸入主題與風格</div>
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid var(--line)">⏱️ 等待 10-20 秒</div>
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid var(--line)">🔄 不滿意可重生</div>
         </div>
-
-        <div style="margin-top:28px;font-size:18px;color:var(--ink-2)">👉 適合：沒有設計工具／想快速試想法</div>
+        <div style="margin-top:22px;font-size:16px;color:var(--ink-2)">👉 沒有設計工具／快速試想法</div>
       </div>
 
       <!-- 1B -->
-      <div style="padding:48px 44px;background:#EFF8F3;border-radius:24px;border:2px solid #CFE5DA;position:relative">
-        <div style="position:absolute;top:-20px;left:40px;background:#6DA892;color:#fff;padding:8px 18px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.1em">ROUTE · 1B</div>
-        <div style="font-size:88px">📤</div>
-        <h3 class="display" style="font-size:50px;margin:14px 0 12px">自行上傳</h3>
-        <p style="font-size:22px;color:var(--ink-2);margin:0 0 24px">在 Canva / PS 做完，拖進來就好。</p>
-
-        <div style="display:grid;gap:12px;font-size:20px">
-          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid #CFE5DA"><span class="mono" style="color:#6DA892;font-size:14px">01</span>&nbsp;&nbsp;支援 PNG / JPG</div>
-          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid #CFE5DA"><span class="mono" style="color:#6DA892;font-size:14px">02</span>&nbsp;&nbsp;後端自動檢查尺寸 + 比例</div>
-          <div style="padding:12px 18px;background:#fff;border-radius:12px;border:1.5px solid #CFE5DA"><span class="mono" style="color:#6DA892;font-size:14px">03</span>&nbsp;&nbsp;通過才能進下一步</div>
+      <div style="padding:36px 30px;background:#EFF8F3;border-radius:24px;border:2px solid #CFE5DA;position:relative">
+        <div style="position:absolute;top:-18px;left:28px;background:#6DA892;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em">ROUTE · B</div>
+        <div style="font-size:72px">📤</div>
+        <h3 class="display" style="font-size:40px;margin:12px 0 10px">自行上傳</h3>
+        <p style="font-size:20px;color:var(--ink-2);margin:0 0 20px">做好的 PNG/JPG，<br>拖進來就好。</p>
+        <div style="display:grid;gap:10px;font-size:18px">
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid #CFE5DA">📁 支援 PNG / JPG</div>
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid #CFE5DA">📐 自動檢查尺寸</div>
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid #CFE5DA">✅ 通過才能下一步</div>
         </div>
+        <div style="margin-top:22px;font-size:16px;color:var(--ink-2)">👉 已有設計稿／用自己的工具</div>
+      </div>
 
-        <div style="margin-top:28px;font-size:18px;color:var(--ink-2)">👉 適合：已有設計稿／用自己熟悉的工具</div>
+      <!-- 1C Canva -->
+      <div style="padding:36px 30px;background:#F3EEFA;border-radius:24px;border:2px solid #D4C4E8;position:relative">
+        <div style="position:absolute;top:-18px;left:28px;background:#7B2FBE;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em">ROUTE · C</div>
+        <div style="font-size:72px">🎨</div>
+        <h3 class="display" style="font-size:40px;margin:12px 0 10px">Canva 設計</h3>
+        <p style="font-size:20px;color:var(--ink-2);margin:0 0 20px">連接 Canva 帳號，<br>自動建立正確尺寸畫布。</p>
+        <div style="display:grid;gap:10px;font-size:18px">
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid #D4C4E8">🔗 連接 Canva 帳號</div>
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid #D4C4E8">📐 畫布尺寸自動設定</div>
+          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid #D4C4E8">📥 設計完一鍵匯回</div>
+        </div>
+        <div style="margin-top:22px;font-size:16px;color:var(--ink-2)">👉 想用 Canva 精細設計</div>
       </div>
     </div>
   </div>
@@ -449,7 +461,7 @@
     <div class="mock">
       <div class="mock-bar">
         <span class="d" style="background:#FF8C69"></span><span class="d" style="background:#FFD98C"></span><span class="d" style="background:#A8D8C8"></span>
-        <span class="url">cup-designer.local/ · Step 2</span>
+        <span class="url">riiqimaker.kiseki.me · Step 2</span>
       </div>
       <div style="padding:32px 34px;">
         <div style="display:flex;gap:8px;margin-bottom:22px">
@@ -790,12 +802,11 @@
     </h2>
     <p style="font-size:32px;color:var(--ink-2);max-width:900px;line-height:1.55;margin:0">
       四步驟，五分鐘。選杯型、做矩形、轉扇形、下載。<br>
-      有卡住的地方，直接在群組敲一聲——我們會把 UX 變得更順手。
+      做設計不需要懂數學，系統幫你搞定一切。
     </p>
 
     <div style="display:flex;gap:18px;margin-top:60px;font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--ink-2)">
-      <span style="padding:12px 22px;background:#fff;border:1.5px solid var(--line);border-radius:999px">cup-designer.local</span>
-      <span style="padding:12px 22px;background:#fff;border:1.5px solid var(--line);border-radius:999px">#support 頻道</span>
+      <span style="padding:12px 22px;background:#fff;border:1.5px solid var(--line);border-radius:999px">riiqimaker.kiseki.me</span>
     </div>
   </div>
 
