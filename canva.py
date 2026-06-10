@@ -141,8 +141,8 @@ def canva_auth():
     session['canva_pkce_verifier'] = verifier
     session['canva_oauth_state'] = state
 
-    # 組合 redirect_uri
-    redirect_uri = url_for('canva.canva_callback', _external=True)
+    # 組合 redirect_uri（強制 HTTPS，因 Zeabur 反向代理會導致 url_for 產生 http）
+    redirect_uri = url_for('canva.canva_callback', _external=True, _scheme='https')
 
     auth_url = (
         f'{CANVA_AUTH_URL}'
@@ -181,7 +181,7 @@ def canva_callback():
     if not verifier:
         return _callback_error('PKCE verifier 遺失')
 
-    redirect_uri = url_for('canva.canva_callback', _external=True)
+    redirect_uri = url_for('canva.canva_callback', _external=True, _scheme='https')
 
     # 用 code + verifier 換 token
     try:
