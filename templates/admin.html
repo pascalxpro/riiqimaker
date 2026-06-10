@@ -163,6 +163,38 @@
     </div>
   </div>
 
+  <!-- Canva 整合設定卡片 -->
+  <div class="card admin-card">
+    <div class="card-title">
+      <div class="icon">🎨</div>
+      Canva 整合設定
+    </div>
+    <div class="admin-form">
+      <div class="form-group">
+        <label>Canva 整合模式</label>
+        <select id="canvaModeSelect" class="admin-select">
+          <option value="popup">Popup 視窗模式（推薦）— OAuth + 編輯器在彈出視窗</option>
+          <option value="redirect">Redirect 跳轉模式 — OAuth 整頁跳轉 + 編輯器開新分頁</option>
+        </select>
+        <small class="form-hint">
+          Popup 模式：使用者不離開主頁面，體驗最佳。<br>
+          Redirect 模式：若瀏覽器封鎖彈出視窗，可改用此模式。
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>Canva Client ID</label>
+        <div class="key-status" id="canvaClientIdStatus" style="margin-bottom:8px"></div>
+        <small class="form-hint">Client ID 由環境變數 CANVA_CLIENT_ID 設定，無法在此修改。</small>
+      </div>
+
+      <div class="admin-actions">
+        <button class="btn-primary admin-save" id="btnSaveCanvaMode">💾 儲存 Canva 設定</button>
+      </div>
+      <div class="test-result" id="canvaModeResult"></div>
+    </div>
+  </div>
+
   </div><!-- /tab-appear -->
 
   <!-- ── Tab 3：AI 設定 ── -->
@@ -909,6 +941,39 @@ btnSave.addEventListener('click', async () => {
       if (d.hf_key_set) { hfKeyStatus.textContent = `目前已設定（${d.hf_key_masked}）`; hfKeyStatus.className = 'key-status set'; }
     });
   }
+});
+
+// ── Canva 模式設定 ──────────────────────────────────
+const canvaModeSelect = document.getElementById('canvaModeSelect');
+const canvaClientIdStatus = document.getElementById('canvaClientIdStatus');
+
+// 載入 Canva 設定
+fetch('/canva/status').then(r => r.json()).then(d => {
+  if (d.has_client_id) {
+    canvaClientIdStatus.textContent = '✅ 已設定 CANVA_CLIENT_ID';
+    canvaClientIdStatus.className = 'key-status set';
+  } else {
+    canvaClientIdStatus.textContent = '❌ 未設定 CANVA_CLIENT_ID（請在環境變數中設定）';
+    canvaClientIdStatus.className = 'key-status unset';
+  }
+  canvaModeSelect.value = d.mode || 'popup';
+}).catch(() => {
+  canvaClientIdStatus.textContent = '⚠️ 無法讀取 Canva 狀態';
+  canvaClientIdStatus.className = 'key-status unset';
+});
+
+document.getElementById('btnSaveCanvaMode').addEventListener('click', async () => {
+  const btn = document.getElementById('btnSaveCanvaMode');
+  const result = document.getElementById('canvaModeResult');
+  btn.disabled = true; btn.textContent = '儲存中…';
+  const res = await fetch('/api/admin/setting', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ key: 'canva_mode', value: canvaModeSelect.value })
+  });
+  const data = await res.json();
+  result.textContent = data.ok ? `✅ 已儲存（${canvaModeSelect.value === 'popup' ? 'Popup 模式' : 'Redirect 模式'}）` : `❌ ${data.msg}`;
+  result.className = `test-result show ${data.ok ? 'ok' : 'err'}`;
+  btn.disabled = false; btn.textContent = '💾 儲存 Canva 設定';
 });
 </script>
 {% endblock %}

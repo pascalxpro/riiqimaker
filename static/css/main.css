@@ -938,3 +938,56 @@ footer {
   font-size: .82rem;
   font-weight: 600;
 }
+
+/* ═══════════════════════════════════════════
+   Canva 整合
+═══════════════════════════════════════════ */
+.btn-canva {
+  width: 100%; padding: 13px;
+  background: #7D2AE8; color: #fff;
+  border: none; border-radius: 14px;
+  font-size: 1rem; font-weight: 900; cursor: pointer;
+  transition: transform .2s, background .2s, box-shadow .2s;
+  box-shadow: 0 4px 16px rgba(125,42,232,.25);
+}
+.btn-canva:hover:not(:disabled) {
+  background: #6B1FD4; transform: scale(1.02);
+  box-shadow: 0 6px 24px rgba(125,42,232,.35);
+}
+.btn-canva:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-canva-create {
+  background: linear-gradient(135deg, #7D2AE8 0%, #00C4CC 100%);
+}
+.btn-canva-create:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6B1FD4 0%, #00A8B0 100%);
+}
+
+.canva-status {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+  font-size: .9rem; font-weight: 700; color: var(--text2);
+}
+.canva-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #ccc;
+  transition: background .3s;
+}
+.canva-dot.connected {
+  background: #2ECC71;
+  box-shadow: 0 0 8px rgba(46,204,113,.5);
+}
+
+.canva-hint {
+  margin-top: 12px;
+  font-size: .85rem; font-weight: 600; color: var(--text2);
+  line-height: 1.6;
+}
+
+/* 霓虹主題 Canva 按鈕 */
+[data-theme="neon"] .btn-canva {
+  box-shadow: 0 0 14px rgba(125,42,232,.5);
+}
+[data-theme="neon"] .btn-canva:hover {
+  box-shadow: 0 0 24px rgba(125,42,232,.7);
+}

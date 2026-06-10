@@ -9,6 +9,7 @@ from database import (init_db, get_cups, get_cup_by_id,
                       update_cup, get_ai_setting, set_ai_setting,
                       verify_user, change_password, get_all_users,
                       create_user, toggle_user_active)
+from canva import canva_bp
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 BANNER_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads', 'banners')
@@ -28,6 +29,9 @@ _is_prod = os.environ.get('FLASK_ENV') == 'production'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE']   = _is_prod
+
+# ── Canva Connect API ──
+app.register_blueprint(canva_bp)
 
 
 def login_required(f):
@@ -197,7 +201,10 @@ def index():
         os.path.isfile(os.path.join(BANNER_FOLDER, f'banner{n}.jpg'))
         for n in (1, 2, 3)
     ]
-    return render_template('index.html', cups=cups, banner_exists=banner_exists)
+    canva_mode = get_ai_setting('canva_mode') or 'popup'
+    has_canva = bool(os.environ.get('CANVA_CLIENT_ID'))
+    return render_template('index.html', cups=cups, banner_exists=banner_exists,
+                           canva_mode=canva_mode, has_canva=has_canva)
 
 
 # ── API 路由 ──────────────────────────────────────────────
@@ -851,6 +858,20 @@ def admin_banner_delete(n):
     path = os.path.join(BANNER_FOLDER, f'banner{n}.jpg')
     if os.path.isfile(path):
         os.remove(path)
+    return jsonify({'ok': True})
+
+
+@app.route('/api/admin/setting', methods=['POST'])
+@admin_required
+def admin_setting():
+    """通用設定 API：儲存任意 key-value 到 ai_settings"""
+    data = request.get_json()
+    key = data.get('key', '').strip()
+    value = data.get('value', '').strip()
+    allowed_keys = {'canva_mode'}
+    if key not in allowed_keys:
+        return jsonify({'ok': False, 'msg': f'不允許的設定項：{key}'}), 400
+    set_ai_setting(key, value)
     return jsonify({'ok': True})
 
 

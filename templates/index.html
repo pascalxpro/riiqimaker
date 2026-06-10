@@ -106,10 +106,13 @@
       製作矩形圖
     </div>
 
-    <!-- 1A / 1B Tabs -->
+    <!-- 1A / 1B / 1C Tabs -->
     <div class="tab-row">
       <button class="tab-btn active" data-tab="panel1a">🤖 AI 幫我生成</button>
       <button class="tab-btn"        data-tab="panel1b">📤 自行上傳</button>
+      {% if has_canva %}
+      <button class="tab-btn"        data-tab="panel1c">🎨 Canva 設計</button>
+      {% endif %}
     </div>
 
     <!-- Panel 1A -->
@@ -181,6 +184,44 @@
       </form>
     </div>
 
+    {% if has_canva %}
+    <!-- Panel 1C: Canva 設計 -->
+    <div class="tab-panel" id="panel1c">
+      <div class="info-box" id="infoBox1c">
+        📐 矩形圖尺寸已自動設定為 <strong id="canvaInfoSize">— 請先選擇杯型 —</strong>
+      </div>
+
+      <!-- Canva 連接狀態 -->
+      <div id="canvaConnectArea">
+        <div class="canva-status" id="canvaStatus">
+          <span class="canva-dot" id="canvaDot"></span>
+          <span id="canvaStatusText">尚未連接 Canva</span>
+        </div>
+        <button type="button" class="btn-canva" id="btnCanvaConnect" onclick="connectCanva()">
+          🔗 連接 Canva 帳號
+        </button>
+      </div>
+
+      <!-- Canva 已連接後的操作區 -->
+      <div id="canvaDesignArea" style="display:none">
+        <button type="button" class="btn-canva btn-canva-create" id="btnCanvaCreate" onclick="createCanvaDesign()">
+          ✨ 開啟 Canva 設計
+        </button>
+        <div class="canva-hint" id="canvaHint">
+          點擊後會開啟 Canva 編輯器，尺寸已自動設定好。設計完成後關閉視窗即可。
+        </div>
+      </div>
+
+      <!-- 匹出進度 -->
+      <div class="progress-wrap" id="canvaExportProgress">
+        <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+        <div class="progress-msg"></div>
+      </div>
+      <div class="error-msg" id="canvaErr"></div>
+      <div class="celebrate" id="canvaCelebrate">🎉 Canva 設計已匯入！繼續下一步吧</div>
+    </div>
+    {% endif %}
+
     <!-- 矩形圖完成後：內嵌轉換區 -->
     <div id="convertSection" style="display:none;margin-top:4px">
       <div style="border-top:2px dashed var(--border);padding-top:20px;margin-top:8px">
@@ -238,6 +279,9 @@
 
 {% block scripts %}
 <script>
+// ── Canva 模式注入 ──────────────────────────
+var canvaMode = '{{ canva_mode }}';
+
 // ── Hero 輪播 ──────────────────────────────
 (function () {
   const slides = document.querySelectorAll('.hc-slide');

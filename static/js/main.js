@@ -71,6 +71,9 @@ hamburger?.addEventListener('click', () => {
    杯型選擇
 ══════════════════════════════════════ */
 let selectedCupId = null;
+let selectedCupWPx = 0;
+let selectedCupHPx = 0;
+let selectedCupName = '';
 
 function selectCup(id, wPx, hPx, name) {
   selectedCupId = id;
@@ -88,11 +91,18 @@ function selectCup(id, wPx, hPx, name) {
   document.getElementById('infoSize').textContent = `${wPx} × ${hPx} px`;
   // 更新 Stage 1B info box
   document.getElementById('uploadInfoSize').textContent = `${wPx} × ${hPx} px`;
+  // 更新 Stage 1C Canva info box
+  const canvaInfo = document.getElementById('canvaInfoSize');
+  if (canvaInfo) canvaInfo.textContent = `${wPx} × ${hPx} px`;
+  // 儲存尺寸供 Canva 使用
+  selectedCupWPx = wPx;
+  selectedCupHPx = hPx;
+  selectedCupName = name;
 }
 
 
 /* ══════════════════════════════════════
-   Stage Tabs（1A / 1B）
+   Stage Tabs（1A / 1B / 1C）
 ══════════════════════════════════════ */
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -517,4 +527,246 @@ function resetFlow() {
 
   // 捲到製作區頂部
   document.getElementById('mainSection')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+
+/* ══════════════════════════════════════
+   Canva Connect API 整合
+══════════════════════════════════════ */
+let canvaDesignId = null;
+
+// 初始化：檢查 Canva 連接狀態
+(function initCanva() {
+  const panel = document.getElementById('panel1c');
+  if (!panel) return;  // Canva 未啟用
+
+  fetch('/canva/status').then(r => r.json()).then(data => {
+    if (data.connected) {
+      _canvaShowConnected();
+    }
+  }).catch(() => {});
+})();
+
+
+function _canvaShowConnected() {
+  const dot = document.getElementById('canvaDot');
+  const txt = document.getElementById('canvaStatusText');
+  const connectArea = document.getElementById('canvaConnectArea');
+  const designArea  = document.getElementById('canvaDesignArea');
+  if (dot) dot.classList.add('connected');
+  if (txt) txt.textContent = '✅ 已連接 Canva';
+  if (connectArea) connectArea.querySelector('.btn-canva').style.display = 'none';
+  if (designArea) designArea.style.display = '';
+}
+
+
+function connectCanva() {
+  if (typeof canvaMode !== 'undefined' && canvaMode === 'redirect') {
+    // Redirect 模式：整頁跳轉
+    window.location.href = '/canva/auth';
+  } else {
+    // Popup 模式：小視窗
+    const w = 600, h = 700;
+    const left = (screen.width - w) / 2;
+    const top  = (screen.height - h) / 2;
+    window.open('/canva/auth', 'canva-auth',
+      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no`);
+  }
+}
+
+// 監聽 Popup 回傳的授權成功訊息
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'canva-auth-success') {
+    _canvaShowConnected();
+  }
+});
+
+
+function createCanvaDesign() {
+  if (!selectedCupId) {
+    _canvaShowError('請先選擇杯型');
+    return;
+  }
+
+  const btn = document.getElementById('btnCanvaCreate');
+  btn.disabled = true;
+  btn.textContent = '⭐ 正在建立設計…';
+  _canvaShowError('');
+
+  fetch('/canva/create-design', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      cup_id: selectedCupId,
+      w_px: selectedCupWPx,
+      h_px: selectedCupHPx,
+      cup_name: selectedCupName,
+    }),
+  })
+  .then(r => r.json())
+  .then(data => {
+    btn.disabled = false;
+    btn.textContent = '✨ 開啟 Canva 設計';
+
+    if (!data.ok) {
+      _canvaShowError(data.msg || '建立失敗');
+      return;
+    }
+
+    canvaDesignId = data.design_id;
+    _openCanvaEditor(data.edit_url);
+  })
+  .catch(err => {
+    btn.disabled = false;
+    btn.textContent = '✨ 開啟 Canva 設計';
+    _canvaShowError('網路錯誤，請重試');
+  });
+}
+
+
+function _openCanvaEditor(editUrl) {
+  const hint = document.getElementById('canvaHint');
+  if (hint) hint.textContent = '✅ Canva 編輯器已開啟，設計完成後關閉視窗即可。';
+
+  let editorWindow;
+  if (typeof canvaMode !== 'undefined' && canvaMode === 'redirect') {
+    editorWindow = window.open(editUrl, '_blank');
+  } else {
+    const w = 1280, h = 800;
+    const left = (screen.width - w) / 2;
+    const top  = (screen.height - h) / 2;
+    editorWindow = window.open(editUrl, 'canva-editor',
+      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no`);
+  }
+
+  // 監聽編輯器關閉 → 自動匯出
+  if (editorWindow) {
+    const timer = setInterval(() => {
+      if (editorWindow.closed) {
+        clearInterval(timer);
+        if (hint) hint.textContent = '📦 正在匯出設計稿…';
+        _exportCanvaDesign();
+      }
+    }, 1000);
+  }
+}
+
+
+function _exportCanvaDesign() {
+  if (!canvaDesignId) {
+    _canvaShowError('缺少 Design ID');
+    return;
+  }
+
+  const progress = document.getElementById('canvaExportProgress');
+  const fill = progress.querySelector('.progress-bar-fill');
+  const msg  = progress.querySelector('.progress-msg');
+  progress.style.display = '';
+  fill.style.width = '20%';
+  msg.textContent = '⭐ 正在向 Canva 請求匯出 PNG…';
+
+  fetch('/canva/export', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ design_id: canvaDesignId }),
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (!data.ok) {
+      _canvaShowError(data.msg || '匯出失敗');
+      progress.style.display = 'none';
+      return;
+    }
+    fill.style.width = '40%';
+    msg.textContent = '⏳ 等待 Canva 處理中…';
+    _pollExportStatus(data.job_id, fill, msg, progress);
+  })
+  .catch(() => {
+    _canvaShowError('匯出請求失敗');
+    progress.style.display = 'none';
+  });
+}
+
+
+function _pollExportStatus(jobId, fill, msg, progress) {
+  let attempts = 0;
+  const maxAttempts = 30;  // 最多輪詢 30 次（約 60 秒）
+
+  const poll = () => {
+    attempts++;
+    const pct = Math.min(40 + (attempts / maxAttempts) * 50, 90);
+    fill.style.width = pct + '%';
+
+    fetch(`/canva/export-status/${jobId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'success' && data.filename) {
+          fill.style.width = '100%';
+          msg.textContent = '✅ 匯出完成！';
+
+          // 自動將 Canva 的圖片帶入轉換流程（复用現有的 generatedFilename + convertSection 遏輯）
+          generatedFilename = data.filename;
+
+          // 顯示轉換區
+          const convertSection = document.getElementById('convertSection');
+          convertSection.style.display = '';
+          const mini = document.getElementById('rectMiniPreview');
+          mini.src = data.url;
+          mini.style.width  = '180px';
+          mini.style.height = '104px';
+
+          const btnConvert = document.getElementById('btnConvert');
+          btnConvert.disabled = false;
+          btnConvert.classList.add('btn-pulse');
+          void convertSection.offsetWidth;
+
+          // 步驟更新
+          document.getElementById('step2')?.classList.add('active');
+
+          // 慶祝
+          const cel = document.getElementById('canvaCelebrate');
+          if (cel) cel.classList.add('show');
+
+          setTimeout(() => {
+            progress.style.display = 'none';
+            convertSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 800);
+          return;
+        }
+
+        if (data.status === 'failed') {
+          _canvaShowError('匯出失敗，請重試');
+          progress.style.display = 'none';
+          return;
+        }
+
+        if (attempts >= maxAttempts) {
+          _canvaShowError('匯出逾時，請重試');
+          progress.style.display = 'none';
+          return;
+        }
+
+        msg.textContent = `⏳ 等待 Canva 處理中…（${attempts}/${maxAttempts}）`;
+        setTimeout(poll, 2000);
+      })
+      .catch(() => {
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 3000);
+        } else {
+          _canvaShowError('查詢失敗');
+          progress.style.display = 'none';
+        }
+      });
+  };
+
+  setTimeout(poll, 2000);
+}
+
+
+function _canvaShowError(msg) {
+  const el = document.getElementById('canvaErr');
+  if (el) {
+    el.textContent = msg;
+    el.style.display = msg ? '' : 'none';
+  }
 }
