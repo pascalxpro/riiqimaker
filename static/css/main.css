@@ -560,7 +560,7 @@ nav a.active { background: var(--primary); color: #fff; }
 }
 .cup-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 10px;
 }
 
@@ -574,7 +574,7 @@ nav a.active { background: var(--primary); color: #fff; }
 .cup-btn:hover  { border-color: var(--primary); transform: translateY(-3px); }
 .cup-btn.active { border-color: var(--primary); background: var(--hi); }
 .cup-btn .cup-emoji { font-size: 1.6rem; display: block; margin-bottom: 4px; }
-.cup-btn .cup-name  { font-size: .82rem; font-weight: 700; color: var(--text2); }
+.cup-btn .cup-name  { font-size: .82rem; font-weight: 700; color: var(--text2); white-space: nowrap; }
 .cup-btn.active .cup-name { color: var(--primary); }
 
 /* 尺寸提示框 */
