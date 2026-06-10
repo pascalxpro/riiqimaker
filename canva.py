@@ -144,16 +144,18 @@ def canva_auth():
     # 組合 redirect_uri（強制 HTTPS，因 Zeabur 反向代理會導致 url_for 產生 http）
     redirect_uri = url_for('canva.canva_callback', _external=True, _scheme='https')
 
-    auth_url = (
-        f'{CANVA_AUTH_URL}'
-        f'?client_id={client_id}'
-        f'&redirect_uri={redirect_uri}'
-        f'&response_type=code'
-        f'&scope={CANVA_SCOPES}'
-        f'&code_challenge={challenge}'
-        f'&code_challenge_method=S256'
-        f'&state={state}'
-    )
+    # 用 urlencode 確保所有參數正確編碼
+    from urllib.parse import urlencode
+    params = urlencode({
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'response_type': 'code',
+        'scope': CANVA_SCOPES,
+        'code_challenge': challenge,
+        'code_challenge_method': 'S256',
+        'state': state,
+    })
+    auth_url = f'{CANVA_AUTH_URL}?{params}'
     return redirect(auth_url)
 
 
