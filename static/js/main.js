@@ -622,6 +622,7 @@ function createCanvaDesign() {
       w_px: selectedCupWPx,
       h_px: selectedCupHPx,
       cup_name: selectedCupName,
+    }),
   })
   .then(r => r.json())
   .then(data => {
