@@ -135,6 +135,21 @@ function handleFileSelect(f) {
   }
   dropZone.querySelector('p').textContent = `已選取：${f.name}`;
   dropZone.querySelector('small').textContent = `${(f.size / 1024).toFixed(0)} KB`;
+
+  // 圖片即時預覽
+  const dzIcon = dropZone.querySelector('.dz-icon');
+  let previewImg = dropZone.querySelector('.dz-preview');
+  if (!previewImg) {
+    previewImg = document.createElement('img');
+    previewImg.className = 'dz-preview';
+    previewImg.style.cssText = 'max-width:100%;max-height:220px;border-radius:12px;margin-top:10px;object-fit:contain;box-shadow:0 2px 12px rgba(0,0,0,.1);cursor:zoom-in';
+    previewImg.addEventListener('click', (e) => { e.stopPropagation(); openLightbox(previewImg.src); });
+    dropZone.appendChild(previewImg);
+  }
+  if (dzIcon) dzIcon.style.display = 'none';
+  const reader = new FileReader();
+  reader.onload = (e) => { previewImg.src = e.target.result; };
+  reader.readAsDataURL(f);
 }
 
 uploadForm?.addEventListener('submit', async e => {
@@ -462,6 +477,11 @@ function resetFlow() {
   const dzS = dropZone?.querySelector('small');
   if (dzP) dzP.textContent = '點擊選擇或拖放圖片到這裡';
   if (dzS) dzS.textContent = '支援 PNG、JPG，建議按照上方尺寸製作';
+  // 移除圖片預覽
+  const dzPreview = dropZone?.querySelector('.dz-preview');
+  if (dzPreview) dzPreview.remove();
+  const dzIcon = dropZone?.querySelector('.dz-icon');
+  if (dzIcon) dzIcon.style.display = '';
 
   // 清除 progress / error / celebrate
   hideProgress('uploadProgress');
