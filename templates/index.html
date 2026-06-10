@@ -111,7 +111,7 @@
       <button class="tab-btn active" data-tab="panel1a">🤖 AI 幫我生成</button>
       <button class="tab-btn"        data-tab="panel1b">📤 自行上傳</button>
       {% if has_canva %}
-      <button class="tab-btn"        data-tab="panel1c">🎨 Canva 設計</button>
+      <button class="tab-btn"        data-tab="panel1c"><svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:4px"><defs><linearGradient id="canvaG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00C4CC"/><stop offset="50%" stop-color="#7B2FBE"/><stop offset="100%" stop-color="#D42A78"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#canvaG)"/><text x="12" y="17.5" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="800" font-size="16">C</text></svg> Canva 設計</button>
       {% endif %}
     </div>
 
@@ -198,14 +198,14 @@
           <span id="canvaStatusText">尚未連接 Canva</span>
         </div>
         <button type="button" class="btn-canva" id="btnCanvaConnect" onclick="connectCanva()">
-          🔗 連接 Canva 帳號
+          <svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align:-4px;margin-right:6px"><defs><linearGradient id="canvaG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00C4CC"/><stop offset="50%" stop-color="#7B2FBE"/><stop offset="100%" stop-color="#D42A78"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#canvaG2)"/><text x="12" y="17.5" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="800" font-size="16">C</text></svg> 連接 Canva 帳號
         </button>
       </div>
 
       <!-- Canva 已連接後的操作區 -->
       <div id="canvaDesignArea" style="display:none">
         <button type="button" class="btn-canva btn-canva-create" id="btnCanvaCreate" onclick="createCanvaDesign()">
-          ✨ 開啟 Canva 設計
+          <svg width="20" height="20" viewBox="0 0 24 24" style="vertical-align:-4px;margin-right:6px"><defs><linearGradient id="canvaG3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00C4CC"/><stop offset="50%" stop-color="#7B2FBE"/><stop offset="100%" stop-color="#D42A78"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#canvaG3)"/><text x="12" y="17.5" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="800" font-size="16">C</text></svg> 開啟 Canva 設計
         </button>
         <div class="canva-hint" id="canvaHint">
           點擊後會開啟 Canva 編輯器，尺寸已自動設定好。設計完成後關閉視窗即可。
