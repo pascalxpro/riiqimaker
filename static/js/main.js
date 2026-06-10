@@ -100,6 +100,34 @@ function selectCup(id, wPx, hPx, name) {
   selectedCupName = name;
 }
 
+// ── URL 參數自動選杯型 ─────────────────────────────────────
+// 用法：https://riiqimaker.kiseki.me/?cup_id=2
+//       https://riiqimaker.kiseki.me/?cup_id=2&tab=canva
+(function autoSelectFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const cupId = params.get('cup_id');
+  if (!cupId) return;
+
+  // 找到對應的杯型按鈕並模擬點擊
+  const btn = document.querySelector(`.cup-btn[data-id="${cupId}"]`);
+  if (btn) {
+    btn.click();
+
+    // 自動切換到指定 tab（如 canva / upload / ai）
+    const tab = params.get('tab');
+    if (tab) {
+      const tabBtn = document.querySelector(`.tab-btn[data-tab="panel1${tab === 'canva' ? 'c' : tab === 'upload' ? 'b' : 'a'}"]`);
+      if (tabBtn) tabBtn.click();
+    }
+
+    // 捲動到步驟 2（製作矩形圖）
+    setTimeout(() => {
+      const step2 = document.querySelector('.card:nth-child(2)');
+      if (step2) step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+  }
+})();
+
 
 /* ══════════════════════════════════════
    Stage Tabs（1A / 1B / 1C）
