@@ -405,6 +405,7 @@ def canva_export_status(job_id):
                     ts = _t.strftime('%Y%m%d_%H%M%S')
                     filename = f'canva_design_{ts}.png'
                     upload_dir = current_app.config.get('UPLOAD_FOLDER', 'uploads')
+                    os.makedirs(upload_dir, exist_ok=True)
                     filepath = os.path.join(upload_dir, filename)
                     with open(filepath, 'wb') as f:
                         f.write(png_resp.content)

@@ -768,6 +768,12 @@ def download(filename):
     return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
 
 
+@app.route('/uploads/<filename>')
+@login_required
+def serve_upload(filename):
+    """提供上傳檔案的內嵌顯示（用於預覽）"""
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
 # ── Banner 圖片 ────────────────────────────────────────────
 
 @app.route('/banner/<int:n>')
