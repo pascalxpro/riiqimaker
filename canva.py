@@ -284,73 +284,16 @@ def canva_create_design():
         return jsonify({'ok': False, 'msg': 'Canva Token 已失效'}), 401
 
     try:
-        # Step 1: 動態產生空白 PNG
-        img = Image.new('RGBA', (int(w_px), int(h_px)), (255, 255, 255, 255))
-        buf = io.BytesIO()
-        img.save(buf, format='PNG')
-        buf.seek(0)
-
-        # Step 2: 上傳到 Canva Asset API（octet-stream + Asset-Upload-Metadata header）
-        import json as _json
-        asset_name = f'Riiqi {cup_name} 底圖'[:50]  # Canva 限制 50 字元
-        upload_metadata = _json.dumps({
-            'name_base64': base64.b64encode(asset_name.encode('utf-8')).decode('ascii'),
-        })
-        upload_headers = {
-            'Authorization': headers['Authorization'],
-            'Content-Type': 'application/octet-stream',
-            'Asset-Upload-Metadata': upload_metadata,
-        }
-        asset_resp = http_requests.post(
-            f'{CANVA_API_BASE}/asset-uploads',
-            headers=upload_headers,
-            data=buf.read(),
-            timeout=30,
-        )
-
-        if asset_resp.status_code not in (200, 201):
-            return jsonify({'ok': False, 'msg': f'Asset 上傳失敗：{asset_resp.status_code}',
-                           'detail': asset_resp.text[:300]}), 500
-
-        asset_data = asset_resp.json()
-        # asset-uploads 回傳的結構可能是 job，需要等待完成
-        asset_job = asset_data.get('job', {})
-        asset_id = asset_job.get('asset', {}).get('id') or asset_data.get('asset', {}).get('id')
-
-        if not asset_id:
-            # 可能是非同步 job，需要輪詢
-            job_id = asset_job.get('id')
-            if job_id:
-                # 輪詢最多 30 秒
-                for _ in range(15):
-                    time.sleep(2)
-                    check = http_requests.get(
-                        f'{CANVA_API_BASE}/asset-uploads/{job_id}',
-                        headers=headers,
-                        timeout=10,
-                    )
-                    if check.status_code == 200:
-                        check_data = check.json()
-                        job_status = check_data.get('job', {}).get('status', '')
-                        if job_status == 'success':
-                            asset_id = check_data['job']['asset']['id']
-                            break
-                        elif job_status == 'failed':
-                            return jsonify({'ok': False, 'msg': 'Asset 上傳失敗'}), 500
-
-            if not asset_id:
-                return jsonify({'ok': False, 'msg': '無法取得 Asset ID'}), 500
-
-        # Step 3: 用 Asset 建立 Design
+        # 直接用自訂尺寸建立 Design（不需要上傳 Asset）
         design_resp = http_requests.post(
             f'{CANVA_API_BASE}/designs',
             headers=headers,
             json={
                 'design_type': {
-                    'type': 'preset',
-                    'name': 'doc',
+                    'type': 'custom',
+                    'width': int(w_px),
+                    'height': int(h_px),
                 },
-                'asset_id': asset_id,
                 'title': f'Riiqi {cup_name} — 矩形圖設計',
             },
             timeout=15,
