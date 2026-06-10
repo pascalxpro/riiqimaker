@@ -550,12 +550,19 @@ nav a.active { background: var(--primary); color: #fff; }
 /* ═══════════════════════════════════════════
    杯型選擇
 ═══════════════════════════════════════════ */
-.cup-scroll {
-  display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;
-  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+.cup-groups {
+  display: flex; flex-direction: column; gap: 18px;
 }
-.cup-scroll::-webkit-scrollbar { height: 4px; }
-.cup-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.cup-group-label {
+  font-size: .85rem; font-weight: 700; color: var(--text2);
+  margin-bottom: 8px; padding-left: 4px;
+  letter-spacing: .03em;
+}
+.cup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
 
 .cup-btn {
   flex-shrink: 0;

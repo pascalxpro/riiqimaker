@@ -77,14 +77,37 @@
       選擇你的杯型
     </div>
 
-    <div class="cup-scroll">
-      {% for cup in cups %}
-      <button class="cup-btn" data-id="{{ cup.id }}"
-              onclick="selectCup({{ cup.id }}, {{ cup.w_px }}, {{ cup.h_px }}, '{{ cup.cup_name }}')">
-        <span class="cup-emoji">{{ '🥤' if cup.cup_series == 'cold_hot' else '☕' }}</span>
-        <span class="cup-name">{{ cup.cup_name }}</span>
-      </button>
-      {% endfor %}
+    <div class="cup-groups">
+      <!-- 冷熱杯 -->
+      <div class="cup-group">
+        <div class="cup-group-label">🥤 冷熱杯</div>
+        <div class="cup-grid">
+          {% for cup in cups %}
+          {% if cup.cup_series == 'cold_hot' %}
+          <button class="cup-btn" data-id="{{ cup.id }}"
+                  onclick="selectCup({{ cup.id }}, {{ cup.w_px }}, {{ cup.h_px }}, '{{ cup.cup_name }}')">
+            <span class="cup-emoji">🥤</span>
+            <span class="cup-name">{{ cup.cup_name }}</span>
+          </button>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <!-- 雙層杯 -->
+      <div class="cup-group">
+        <div class="cup-group-label">☕ 雙層杯</div>
+        <div class="cup-grid">
+          {% for cup in cups %}
+          {% if cup.cup_series == 'double_wall' %}
+          <button class="cup-btn" data-id="{{ cup.id }}"
+                  onclick="selectCup({{ cup.id }}, {{ cup.w_px }}, {{ cup.h_px }}, '{{ cup.cup_name }}')">
+            <span class="cup-emoji">☕</span>
+            <span class="cup-name">{{ cup.cup_name }}</span>
+          </button>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
     </div>
 
     <div class="spec-box" id="specBox">
