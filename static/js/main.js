@@ -593,6 +593,27 @@ function createCanvaDesign() {
   btn.textContent = '⭐ 正在建立設計…';
   _canvaShowError('');
 
+  // 先同步開啟空白視窗（避免被瀏覽器阻擋彈出視窗）
+  let editorWindow = null;
+  if (typeof canvaMode === 'undefined' || canvaMode !== 'redirect') {
+    const w = 1280, h = 800;
+    const left = (screen.width - w) / 2;
+    const top  = (screen.height - h) / 2;
+    editorWindow = window.open('about:blank', 'canva-editor',
+      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no`);
+    if (editorWindow) {
+      editorWindow.document.write(`
+        <html><head><title>Canva 設計</title>
+        <style>body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;
+        font-family:system-ui;background:#f8f7ff;color:#333}
+        .loader{text-align:center}.spinner{width:48px;height:48px;border:4px solid #e0e0e0;
+        border-top:4px solid #7D2AE8;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+        @keyframes spin{to{transform:rotate(360deg)}}</style></head><body>
+        <div class="loader"><div class="spinner"></div><h3>正在建立 Canva 設計…</h3><p>請稍候，尺寸與底圖準備中</p></div>
+        </body></html>`);
+    }
+  }
+
   fetch('/canva/create-design', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -609,47 +630,43 @@ function createCanvaDesign() {
     btn.textContent = '✨ 開啟 Canva 設計';
 
     if (!data.ok) {
+      if (editorWindow) editorWindow.close();
       _canvaShowError(data.msg || '建立失敗');
       return;
     }
 
     canvaDesignId = data.design_id;
-    _openCanvaEditor(data.edit_url);
+
+    // 導向 Canva 編輯器
+    if (editorWindow && !editorWindow.closed) {
+      editorWindow.location.href = data.edit_url;
+    } else {
+      // Redirect 模式 or popup 被關閉
+      editorWindow = window.open(data.edit_url, '_blank');
+    }
+
+    const hint = document.getElementById('canvaHint');
+    if (hint) hint.textContent = '✅ Canva 編輯器已開啟，設計完成後關閉視窗即可。';
+
+    // 監聽編輯器關閉 → 自動匯出
+    if (editorWindow) {
+      const timer = setInterval(() => {
+        if (editorWindow.closed) {
+          clearInterval(timer);
+          if (hint) hint.textContent = '📦 正在匯出設計稿…';
+          _exportCanvaDesign();
+        }
+      }, 1000);
+    }
   })
   .catch(err => {
     btn.disabled = false;
     btn.textContent = '✨ 開啟 Canva 設計';
+    if (editorWindow) editorWindow.close();
     _canvaShowError('網路錯誤，請重試');
   });
 }
 
-
-function _openCanvaEditor(editUrl) {
-  const hint = document.getElementById('canvaHint');
-  if (hint) hint.textContent = '✅ Canva 編輯器已開啟，設計完成後關閉視窗即可。';
-
-  let editorWindow;
-  if (typeof canvaMode !== 'undefined' && canvaMode === 'redirect') {
-    editorWindow = window.open(editUrl, '_blank');
-  } else {
-    const w = 1280, h = 800;
-    const left = (screen.width - w) / 2;
-    const top  = (screen.height - h) / 2;
-    editorWindow = window.open(editUrl, 'canva-editor',
-      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no`);
-  }
-
-  // 監聽編輯器關閉 → 自動匯出
-  if (editorWindow) {
-    const timer = setInterval(() => {
-      if (editorWindow.closed) {
-        clearInterval(timer);
-        if (hint) hint.textContent = '📦 正在匯出設計稿…';
-        _exportCanvaDesign();
-      }
-    }, 1000);
-  }
-}
 
 
 function _exportCanvaDesign() {
