@@ -46,6 +46,10 @@
         <label>網站名稱（顯示於 Header、Footer、瀏覽器標籤）</label>
         <input type="text" id="siteTitleInput" class="form-input" style="width:100%" value="{{ site_title }}">
       </div>
+      <div class="form-group" style="margin-top:14px">
+        <label>Footer 文字（顯示於頁尾，留空則預設為「網站名稱 · RiiqiMaker」）</label>
+        <input type="text" id="footerTextInput" class="form-input" style="width:100%" placeholder="例：© 2026 RiiqiMaker · 所有權利保留" value="{{ footer_text }}">
+      </div>
       <div class="admin-actions">
         <button class="btn-primary admin-save" id="btnSaveSiteTitle">💾 儲存</button>
       </div>
@@ -729,7 +733,7 @@ btnSaveSiteTitle.addEventListener('click', async () => {
   btnSaveSiteTitle.disabled = true; btnSaveSiteTitle.textContent = '儲存中…';
   const res = await fetch('/api/admin/site-title', {
     method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ site_title: siteTitleInput.value })
+    body: JSON.stringify({ site_title: siteTitleInput.value, footer_text: document.getElementById('footerTextInput').value })
   });
   const d = await res.json();
   siteTitleResult.className = 'test-result ' + (d.ok ? 'success' : 'error');

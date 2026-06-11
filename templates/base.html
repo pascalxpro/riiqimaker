@@ -92,7 +92,11 @@
 
 <!-- Footer -->
 <footer>
+  {% if footer_text %}
+  {{ footer_text }}
+  {% else %}
   ☕ {{ site_title }} &nbsp;·&nbsp; RiiqiMaker
+  {% endif %}
   &nbsp;·&nbsp;
   <a href="/guide" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline; opacity:.7;">📖 使用說明</a>
 </footer>
