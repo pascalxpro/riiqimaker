@@ -16,9 +16,7 @@
 
 "第一步：選杯型。我們內建了 10 種常見杯型，從 8oz 到 24oz，冷熱杯和雙層杯都有。你點一下，系統會自動算好矩形圖該做多大。",
 
-"第二步：做矩形圖。這裡你有三個選擇。第一是 AI 幫你生、第二是自己上傳、第三是用 Canva 線上設計。三條路最後產出的都是同一張矩形圖。",
-
-"AI 生成只要填主題、風格、文字三個欄位，等十幾秒就出來。Prompt 規範由後端統一管理，確保印刷品質一致。",
+"第二步：做矩形圖。這裡你有兩個選擇。第一是自己上傳設計好的圖片、第二是用 Canva 線上設計。兩條路最後產出的都是同一張矩形圖。",
 
 "自行上傳就是把你在任何工具做好的 PNG/JPG 拖進來，系統自動檢查尺寸與比例。",
 
@@ -246,7 +244,7 @@
         <div style="font-family:'Noto Serif TC',serif;font-weight:900;font-size:120px;line-height:.9;color:var(--coral);opacity:.22;position:absolute;top:10px;right:18px">2</div>
         <div style="font-size:56px">🎨</div>
         <h3 class="display" style="font-size:36px;margin:22px 0 10px">做矩形圖</h3>
-        <p style="color:var(--ink-2);font-size:20px;margin:0;line-height:1.55">🤖 AI 生成 · 📤 上傳<br>· 🎨 Canva 設計，三選一</p>
+        <p style="color:var(--ink-2);font-size:20px;margin:0;line-height:1.55">📤 自行上傳<br>· 🎨 Canva 設計，二選一</p>
       </div>
 
       <div class="mock" style="padding:36px 28px 32px;border-radius:22px;position:relative">
@@ -367,27 +365,13 @@
 <section data-screen-label="05 Step 2 製作矩形圖">
   <div style="position:absolute;inset:0;padding:90px 140px">
     <div class="steppill"><span class="num">2</span>製作矩形圖</div>
-    <h2 class="display" style="font-size:84px;margin:28px 0 16px">三條路，自己挑。</h2>
+    <h2 class="display" style="font-size:84px;margin:28px 0 16px">兩條路，自己挑。</h2>
     <p style="font-size:26px;color:var(--ink-2);margin:0 0 50px">不管走哪條，最後產出的都是同一張矩形圖，不影響後面的轉換。</p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
-      <!-- 1A -->
-      <div style="padding:36px 30px;background:#FFF4E3;border-radius:24px;border:2px solid var(--line);position:relative">
-        <div style="position:absolute;top:-18px;left:28px;background:var(--coral);color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em">ROUTE · A</div>
-        <div style="font-size:72px">🤖</div>
-        <h3 class="display" style="font-size:40px;margin:12px 0 10px">AI 智慧生成</h3>
-        <p style="font-size:20px;color:var(--ink-2);margin:0 0 20px">填主題、風格、文字三欄，<br>AI 產出設計。</p>
-        <div style="display:grid;gap:10px;font-size:18px">
-          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid var(--line)">🎯 輸入主題與風格</div>
-          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid var(--line)">⏱️ 等待 10-20 秒</div>
-          <div style="padding:10px 14px;background:#fff;border-radius:10px;border:1.5px solid var(--line)">🔄 不滿意可重生</div>
-        </div>
-        <div style="margin-top:22px;font-size:16px;color:var(--ink-2)">👉 沒有設計工具／快速試想法</div>
-      </div>
-
-      <!-- 1B -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px">
+      <!-- 1A 上傳 -->
       <div style="padding:36px 30px;background:#EFF8F3;border-radius:24px;border:2px solid #CFE5DA;position:relative">
-        <div style="position:absolute;top:-18px;left:28px;background:#6DA892;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em">ROUTE · B</div>
+        <div style="position:absolute;top:-18px;left:28px;background:#6DA892;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em">ROUTE · A</div>
         <div style="font-size:72px">📤</div>
         <h3 class="display" style="font-size:40px;margin:12px 0 10px">自行上傳</h3>
         <p style="font-size:20px;color:var(--ink-2);margin:0 0 20px">做好的 PNG/JPG，<br>拖進來就好。</p>
@@ -399,9 +383,9 @@
         <div style="margin-top:22px;font-size:16px;color:var(--ink-2)">👉 已有設計稿／用自己的工具</div>
       </div>
 
-      <!-- 1C Canva -->
+      <!-- 1B Canva -->
       <div style="padding:36px 30px;background:#F3EEFA;border-radius:24px;border:2px solid #D4C4E8;position:relative">
-        <div style="position:absolute;top:-18px;left:28px;background:#7B2FBE;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em">ROUTE · C</div>
+        <div style="position:absolute;top:-18px;left:28px;background:#7B2FBE;color:#fff;padding:6px 14px;border-radius:999px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.1em">ROUTE · B</div>
         <div style="font-size:72px">🎨</div>
         <h3 class="display" style="font-size:40px;margin:12px 0 10px">Canva 設計</h3>
         <p style="font-size:20px;color:var(--ink-2);margin:0 0 20px">連接 Canva 帳號，<br>自動建立正確尺寸畫布。</p>
@@ -421,94 +405,8 @@
   </div>
 </section>
 
-<!-- ========== Slide 6 : Stage 1A walk ========== -->
-<section data-screen-label="06 Stage 1A AI 生成">
-  <div style="position:absolute;inset:0;padding:70px 100px;display:grid;grid-template-columns:1fr 1.15fr;gap:60px;align-items:center">
-    <!-- left -->
-    <div>
-      <div class="kicker">ROUTE · 1A</div>
-      <h2 class="display" style="font-size:72px;margin:16px 0 24px">AI 幫你畫這張圖</h2>
-      <ol style="list-style:none;padding:0;margin:0;counter-reset:s">
-        <li style="display:flex;gap:22px;margin-bottom:22px;align-items:flex-start">
-          <span style="flex:0 0 48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:22px">1</span>
-          <div>
-            <div style="font-size:24px;font-weight:700">填三個欄位</div>
-            <div style="color:var(--ink-2);font-size:20px">主題、風格、主要文字，越具體越好。</div>
-          </div>
-        </li>
-        <li style="display:flex;gap:22px;margin-bottom:22px;align-items:flex-start">
-          <span style="flex:0 0 48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:22px">2</span>
-          <div>
-            <div style="font-size:24px;font-weight:700">系統組 Prompt</div>
-            <div style="color:var(--ink-2);font-size:20px">後端把印刷規範（白底／Logo 位置／文字置中）＋ 你的輸入，組好送給 AI。</div>
-          </div>
-        </li>
-        <li style="display:flex;gap:22px;margin-bottom:22px;align-items:flex-start">
-          <span style="flex:0 0 48px;height:48px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:22px">3</span>
-          <div>
-            <div style="font-size:24px;font-weight:700">等 10–20 秒</div>
-            <div style="color:var(--ink-2);font-size:20px">矩形圖直接生成在畫面上，不滿意可重生。</div>
-          </div>
-        </li>
-      </ol>
-
-      <div style="margin-top:28px;padding:20px 24px;background:#FFF4E3;border-radius:14px;border:1.5px dashed var(--coral);font-size:18px;color:var(--ink-2)">
-        ℹ️ Prompt 規範由管理員統一維護，確保印刷品質一致，你不用也不能改。
-      </div>
-    </div>
-
-    <!-- right: form mock -->
-    <div class="mock">
-      <div class="mock-bar">
-        <span class="d" style="background:#FF8C69"></span><span class="d" style="background:#FFD98C"></span><span class="d" style="background:#A8D8C8"></span>
-        <span class="url">riiqimaker.kiseki.me · Step 2</span>
-      </div>
-      <div style="padding:32px 34px;">
-        <div style="display:flex;gap:8px;margin-bottom:22px">
-          <div style="padding:10px 20px;background:var(--coral);color:#fff;border-radius:999px;font-weight:700;font-size:16px">🤖 AI 幫我生成</div>
-          <div style="padding:10px 20px;background:#F6EDDC;color:var(--ink-2);border-radius:999px;font-size:16px">📤 自行上傳</div>
-        </div>
-
-        <div style="padding:14px 18px;background:#FFF4E3;border-radius:10px;font-size:15px;color:var(--ink-2);margin-bottom:22px">
-          📐 矩形圖尺寸已自動設定為 <strong style="color:var(--ink)">2294 × 1029 px</strong>
-        </div>
-
-        <div style="margin-bottom:16px">
-          <div style="font-size:15px;font-weight:600;margin-bottom:6px">設計主題 <span style="opacity:.55;font-weight:400">（例如：聖誕節、春季花園）</span></div>
-          <div style="padding:12px 14px;border:1.5px solid var(--coral);border-radius:10px;font-size:16px;background:#fff">春天櫻花</div>
-        </div>
-        <div style="margin-bottom:16px">
-          <div style="font-size:15px;font-weight:600;margin-bottom:6px">風格</div>
-          <div style="padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;background:#fff;color:var(--ink-2)">日式簡約</div>
-        </div>
-        <div style="margin-bottom:22px">
-          <div style="font-size:15px;font-weight:600;margin-bottom:6px">主要文字</div>
-          <div style="padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;background:#fff;min-height:52px;color:var(--ink-2)">Sakura Café<br>春限定</div>
-        </div>
-
-        <!-- progress -->
-        <div style="margin-bottom:20px">
-          <div style="height:8px;background:#F6EDDC;border-radius:999px;overflow:hidden">
-            <div style="height:100%;width:62%;background:linear-gradient(90deg,var(--coral),#FFB88C);border-radius:999px"></div>
-          </div>
-          <div style="font-size:14px;color:var(--ink-2);margin-top:8px">🎨 AI 正在幫你畫…（別急，好東西值得等）</div>
-        </div>
-
-        <div style="padding:16px;background:var(--coral);color:#fff;border-radius:12px;text-align:center;font-weight:700;font-size:18px">
-          ✨ 開始生成矩形圖
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">
-    <span><span class="dot"></span>Stage 1A · AI 生成</span>
-    <span class="slide-num">06</span>
-  </div>
-</section>
-
-<!-- ========== Slide 7 : Stage 1B walk ========== -->
-<section data-screen-label="07 Stage 1B 自行上傳">
+<!-- ========== Slide 6 : Stage 1B walk ========== -->
+<section data-screen-label="06 自行上傳">
   <div style="position:absolute;inset:0;padding:70px 100px;display:grid;grid-template-columns:1.15fr 1fr;gap:60px;align-items:center">
     <!-- left: upload mock -->
     <div class="mock">
@@ -572,12 +470,12 @@
 
   <div class="footer">
     <span><span class="dot"></span>Stage 1B · 自行上傳</span>
-    <span class="slide-num">07</span>
+    <span class="slide-num">06</span>
   </div>
 </section>
 
-<!-- ========== Slide 8 : Step 3 convert ========== -->
-<section data-screen-label="08 Step 3 轉換扇形圖">
+<!-- ========== Slide 7 : Step 3 convert ========== -->
+<section data-screen-label="07 Step 3 轉換扇形圖">
   <div style="position:absolute;inset:0;padding:80px 120px">
     <div class="steppill mint"><span class="num">3</span>轉換扇形圖</div>
     <h2 class="display" style="font-size:80px;margin:28px 0 16px">一鍵彎曲，<br>數學會幫你搞定。</h2>
@@ -639,12 +537,12 @@
 
   <div class="footer">
     <span><span class="dot"></span>Step 3 · 轉換扇形圖</span>
-    <span class="slide-num">08</span>
+    <span class="slide-num">07</span>
   </div>
 </section>
 
-<!-- ========== Slide 9 : Step 4 download ========== -->
-<section data-screen-label="09 Step 4 下載">
+<!-- ========== Slide 8 : Step 4 download ========== -->
+<section data-screen-label="08 Step 4 下載">
   <div style="position:absolute;inset:0;padding:80px 120px">
     <div class="steppill"><span class="num">4</span>下載你的檔案</div>
     <h2 class="display" style="font-size:80px;margin:28px 0 16px">兩個檔案一起拿。</h2>
@@ -711,12 +609,12 @@
 
   <div class="footer">
     <span><span class="dot"></span>Step 4 · 下載</span>
-    <span class="slide-num">09</span>
+    <span class="slide-num">08</span>
   </div>
 </section>
 
-<!-- ========== Slide 10 : FAQ ========== -->
-<section data-screen-label="10 常見問題">
+<!-- ========== Slide 9 : FAQ ========== -->
+<section data-screen-label="09 常見問題">
   <div style="position:absolute;inset:0;padding:90px 140px">
     <div class="kicker">FAQ</div>
     <h2 class="display" style="font-size:80px;margin:18px 0 60px">你可能想問…</h2>
@@ -786,12 +684,12 @@
 
   <div class="footer">
     <span><span class="dot"></span>常見問題</span>
-    <span class="slide-num">10</span>
+    <span class="slide-num">09</span>
   </div>
 </section>
 
-<!-- ========== Slide 11 : Closing ========== -->
-<section data-screen-label="11 結尾">
+<!-- ========== Slide 10 : Closing ========== -->
+<section data-screen-label="10 結尾">
   <div class="blob" style="width:560px;height:560px;background:var(--coral);top:-160px;left:-160px;opacity:.3"></div>
   <div class="blob" style="width:440px;height:440px;background:var(--mint);bottom:-140px;right:-100px;opacity:.5"></div>
 
@@ -814,7 +712,7 @@
 
   <div class="footer">
     <span><span class="dot"></span>謝謝！</span>
-    <span class="slide-num">11</span>
+    <span class="slide-num">10</span>
   </div>
 </section>
 
