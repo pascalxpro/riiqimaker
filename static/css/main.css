@@ -1019,12 +1019,11 @@ footer {
   transform: translate(-50%, -50%) scale(.85);
   z-index: 10000;
   display: flex; align-items: center; gap: 18px;
-  background: rgba(255,255,255,.97);
-  backdrop-filter: blur(16px);
-  border: 2.5px solid var(--primary);
+  background: linear-gradient(135deg, #FF8C69 0%, #FF6B9D 50%, #C084FC 100%);
+  border: 3px solid #fff;
   border-radius: 22px;
   padding: 28px 36px;
-  box-shadow: 0 16px 48px rgba(0,0,0,.18), 0 4px 12px rgba(0,0,0,.08);
+  box-shadow: 0 16px 48px rgba(255,107,157,.3), 0 4px 16px rgba(192,132,252,.2);
   opacity: 0;
   transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s;
   max-width: 460px;
@@ -1039,7 +1038,7 @@ footer {
   content: '';
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.25);
+  background: rgba(0,0,0,.3);
   z-index: -1;
   border-radius: 0;
 }
@@ -1047,6 +1046,7 @@ footer {
   font-size: 2.8rem;
   flex-shrink: 0;
   animation: toast-bounce .6s ease-out;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
 }
 @keyframes toast-bounce {
   0%, 100% { transform: translateY(0); }
@@ -1056,21 +1056,23 @@ footer {
 .cup-toast-body { flex: 1; }
 .cup-toast-title {
   font-size: 1.15rem; font-weight: 800;
-  color: var(--primary2);
+  color: #fff;
   margin-bottom: 4px;
+  text-shadow: 0 1px 3px rgba(0,0,0,.15);
 }
 .cup-toast-msg {
-  font-size: .92rem; color: var(--text2);
+  font-size: .92rem; color: rgba(255,255,255,.9);
   line-height: 1.5;
 }
 .cup-toast-close {
-  background: none; border: none;
-  font-size: 1.3rem; color: var(--text2);
-  cursor: pointer; padding: 0 4px;
-  opacity: .5; transition: opacity .2s;
+  background: rgba(255,255,255,.25); border: none;
+  font-size: 1.2rem; color: #fff;
+  cursor: pointer; padding: 2px 8px;
+  border-radius: 8px;
+  opacity: .8; transition: all .2s;
   flex-shrink: 0; align-self: flex-start;
 }
-.cup-toast-close:hover { opacity: 1; }
+.cup-toast-close:hover { opacity: 1; background: rgba(255,255,255,.4); }
 
 /* 杯型區閃爍高亮 */
 .cup-highlight {
