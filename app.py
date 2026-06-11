@@ -764,8 +764,8 @@ def admin_update_cup(cup_id):
 
 
 @app.route('/download/<filename>')
-@login_required
 def download(filename):
+    """下載檔案（不需登入，符合免費使用規則）"""
     return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
 
 

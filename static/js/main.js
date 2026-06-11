@@ -444,7 +444,7 @@ btnConvert?.addEventListener('click', async () => {
 });
 
 function onFanReady(filename) {
-  document.getElementById('fanPreview').src = `/download/${filename}`;
+  document.getElementById('fanPreview').src = `/uploads/${filename}`;
   document.getElementById('dlFan').href     = `/download/${filename}`;
 
   // 轉換按鈕顯示完成狀態
