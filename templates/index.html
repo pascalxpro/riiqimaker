@@ -130,16 +130,38 @@
     </div>
 
     <!-- 1A / 1B / 1C Tabs -->
+    {% set enabled_tabs = [] %}
+    {% if svc_ai %}{% set _ = enabled_tabs.append('ai') %}{% endif %}
+    {% if svc_upload %}{% set _ = enabled_tabs.append('upload') %}{% endif %}
+    {% if svc_canva %}{% set _ = enabled_tabs.append('canva') %}{% endif %}
+
+    {% if enabled_tabs|length > 1 %}
     <div class="tab-row">
-      <button class="tab-btn active" data-tab="panel1a">🤖 AI 幫我生成</button>
-      <button class="tab-btn"        data-tab="panel1b">📤 自行上傳</button>
-      {% if has_canva %}
-      <button class="tab-btn"        data-tab="panel1c"><svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:4px"><defs><linearGradient id="canvaG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00C4CC"/><stop offset="50%" stop-color="#7B2FBE"/><stop offset="100%" stop-color="#D42A78"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#canvaG)"/><text x="12" y="17.5" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="800" font-size="16">C</text></svg> Canva 設計</button>
+      {% if svc_ai %}
+      <button class="tab-btn {{ 'active' if enabled_tabs[0] == 'ai' }}" data-tab="panel1a">🤖 AI 幫我生成</button>
+      {% endif %}
+      {% if svc_upload %}
+      <button class="tab-btn {{ 'active' if enabled_tabs[0] == 'upload' }}" data-tab="panel1b">📤 自行上傳</button>
+      {% endif %}
+      {% if svc_canva %}
+      <button class="tab-btn {{ 'active' if enabled_tabs[0] == 'canva' }}" data-tab="panel1c"><svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:4px"><defs><linearGradient id="canvaG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00C4CC"/><stop offset="50%" stop-color="#7B2FBE"/><stop offset="100%" stop-color="#D42A78"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#canvaG)"/><text x="12" y="17.5" text-anchor="middle" fill="#fff" font-family="sans-serif" font-weight="800" font-size="16">C</text></svg> Canva 設計</button>
       {% endif %}
     </div>
+    {% endif %}
 
+    {% if enabled_tabs|length == 0 %}
+    <div class="info-box" style="text-align:center;color:var(--text2);padding:30px">
+      ⚠️ 目前沒有啟用任何設計服務，請聯繫管理員
+    </div>
+    {% endif %}
+
+    {% if svc_ai %}
     <!-- Panel 1A -->
-    <div class="tab-panel active" id="panel1a">
+    <div class="tab-panel {{ 'active' if enabled_tabs[0] == 'ai' }}" id="panel1a">
+    {% endif %}
+    {% if not svc_ai %}
+    <div class="tab-panel" id="panel1a" style="display:none">
+    {% endif %}
       <div class="info-box" id="infoBox1a">
         📐 矩形圖尺寸已自動設定為 <strong id="infoSize">— 請先選擇杯型 —</strong>
       </div>
@@ -179,8 +201,13 @@
       </form>
     </div>
 
+    {% if svc_upload %}
     <!-- Panel 1B -->
-    <div class="tab-panel" id="panel1b">
+    <div class="tab-panel {{ 'active' if enabled_tabs[0] == 'upload' }}" id="panel1b">
+    {% endif %}
+    {% if not svc_upload %}
+    <div class="tab-panel" id="panel1b" style="display:none">
+    {% endif %}
       <div class="info-box">
         📐 建議尺寸：<strong id="uploadInfoSize">— 請先選擇杯型 —</strong>
       </div>
@@ -207,9 +234,9 @@
       </form>
     </div>
 
-    {% if has_canva %}
+    {% if svc_canva %}
     <!-- Panel 1C: Canva 設計 -->
-    <div class="tab-panel" id="panel1c">
+    <div class="tab-panel {{ 'active' if enabled_tabs[0] == 'canva' }}" id="panel1c">
       <div class="info-box" id="infoBox1c">
         📐 矩形圖尺寸已自動設定為 <strong id="canvaInfoSize">— 請先選擇杯型 —</strong>
       </div>

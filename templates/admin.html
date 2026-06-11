@@ -156,6 +156,28 @@
         </div>
       </div>
 
+      <!-- 服務開關 -->
+      <div style="margin-top:20px;padding-top:20px;border-top:2px dashed var(--border)">
+        <label style="font-weight:800;font-size:.95rem;display:block;margin-bottom:14px">🔧 服務開關（控制前台顯示的設計方式）</label>
+        <div style="display:flex;flex-wrap:wrap;gap:16px 28px">
+          <label class="svc-toggle">
+            <input type="checkbox" id="svcAi" checked>
+            <span class="svc-slider"></span>
+            <span class="svc-label">🤖 AI 幫我生成</span>
+          </label>
+          <label class="svc-toggle">
+            <input type="checkbox" id="svcUpload" checked>
+            <span class="svc-slider"></span>
+            <span class="svc-label">📤 自行上傳</span>
+          </label>
+          <label class="svc-toggle">
+            <input type="checkbox" id="svcCanva" checked>
+            <span class="svc-slider"></span>
+            <span class="svc-label">🎨 Canva 設計</span>
+          </label>
+        </div>
+      </div>
+
       <div class="admin-actions">
         <button class="btn-primary admin-save" id="btnSaveAppearance">💾 儲存外觀設定</button>
       </div>
@@ -665,6 +687,10 @@ fetch('/api/admin/appearance').then(r => r.json()).then(d => {
   uiFontSize.value = d.ui_font_size || '16';
   fontSizeLabel.textContent = d.ui_font_size || '16';
   if (d.ui_font_color) { uiFontColor.value = d.ui_font_color; uiFontColorText.value = d.ui_font_color; }
+  // 服務開關
+  document.getElementById('svcAi').checked     = d.svc_ai !== 'off';
+  document.getElementById('svcUpload').checked  = d.svc_upload !== 'off';
+  document.getElementById('svcCanva').checked   = d.svc_canva !== 'off';
 });
 
 document.getElementById('btnSaveAppearance').addEventListener('click', async () => {
@@ -679,6 +705,9 @@ document.getElementById('btnSaveAppearance').addEventListener('click', async () 
       ui_font_family: uiFontFamily.value,
       ui_font_color: color,
       ui_font_size: uiFontSize.value,
+      svc_ai:     document.getElementById('svcAi').checked     ? 'on' : 'off',
+      svc_upload: document.getElementById('svcUpload').checked ? 'on' : 'off',
+      svc_canva:  document.getElementById('svcCanva').checked  ? 'on' : 'off',
     })
   });
   const data = await res.json();

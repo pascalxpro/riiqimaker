@@ -205,8 +205,12 @@ def index():
     ]
     canva_mode = get_ai_setting('canva_mode') or 'popup'
     has_canva = bool(os.environ.get('CANVA_CLIENT_ID'))
+    svc_ai     = (get_ai_setting('svc_ai') or 'on') == 'on'
+    svc_upload = (get_ai_setting('svc_upload') or 'on') == 'on'
+    svc_canva  = (get_ai_setting('svc_canva') or 'on') == 'on' and has_canva
     return render_template('index.html', cups=cups, banner_exists=banner_exists,
-                           canva_mode=canva_mode, has_canva=has_canva)
+                           canva_mode=canva_mode, has_canva=has_canva,
+                           svc_ai=svc_ai, svc_upload=svc_upload, svc_canva=svc_canva)
 
 
 # ── API 路由 ──────────────────────────────────────────────
@@ -547,6 +551,9 @@ def admin_get_appearance():
         'ui_font_family': get_ai_setting('ui_font_family') or 'Nunito',
         'ui_font_color': get_ai_setting('ui_font_color') or '',
         'ui_font_size':  get_ai_setting('ui_font_size') or '16',
+        'svc_ai':        get_ai_setting('svc_ai') or 'on',
+        'svc_upload':    get_ai_setting('svc_upload') or 'on',
+        'svc_canva':     get_ai_setting('svc_canva') or 'on',
     })
 
 
@@ -571,6 +578,10 @@ def admin_save_appearance():
     set_ai_setting('ui_font_family', font)
     set_ai_setting('ui_font_color', data.get('ui_font_color', ''))
     set_ai_setting('ui_font_size', str(size))
+    # 服務開關
+    for key in ('svc_ai', 'svc_upload', 'svc_canva'):
+        val = data.get(key, 'on')
+        set_ai_setting(key, 'on' if val == 'on' else 'off')
     return jsonify({'ok': True})
 
 
