@@ -1009,3 +1009,65 @@ footer {
 [data-theme="neon"] .btn-canva:hover {
   box-shadow: 0 0 24px rgba(125,42,232,.7);
 }
+
+/* ═══════════════════════════════════════════
+   Toast 提示
+═══════════════════════════════════════════ */
+.cup-toast {
+  position: fixed;
+  top: 24px; right: 24px;
+  z-index: 10000;
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255,255,255,.95);
+  backdrop-filter: blur(12px);
+  border: 2px solid var(--primary);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  max-width: 380px;
+}
+.cup-toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+.cup-toast-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  animation: toast-bounce .6s ease-out;
+}
+@keyframes toast-bounce {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  60% { transform: translateY(-4px); }
+}
+.cup-toast-body { flex: 1; }
+.cup-toast-title {
+  font-size: .95rem; font-weight: 800;
+  color: var(--primary2);
+  margin-bottom: 2px;
+}
+.cup-toast-msg {
+  font-size: .82rem; color: var(--text2);
+  line-height: 1.4;
+}
+.cup-toast-close {
+  background: none; border: none;
+  font-size: 1.3rem; color: var(--text2);
+  cursor: pointer; padding: 0 4px;
+  opacity: .5; transition: opacity .2s;
+  flex-shrink: 0; align-self: flex-start;
+}
+.cup-toast-close:hover { opacity: 1; }
+
+/* 杯型區閃爍高亮 */
+.cup-highlight {
+  animation: cup-glow 0.5s ease-in-out 3;
+  border-radius: 18px;
+}
+@keyframes cup-glow {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 0 4px var(--primary), 0 0 20px rgba(255,140,105,.3); }
+}

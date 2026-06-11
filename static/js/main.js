@@ -68,6 +68,45 @@ hamburger?.addEventListener('click', () => {
 
 
 /* ══════════════════════════════════════
+   Toast 提示（未選杯型警告）
+══════════════════════════════════════ */
+function showCupToast(msg) {
+  // 移除舊 toast
+  document.getElementById('cupToast')?.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'cupToast';
+  toast.className = 'cup-toast';
+  toast.innerHTML = `
+    <div class="cup-toast-icon">☕</div>
+    <div class="cup-toast-body">
+      <div class="cup-toast-title">請先選擇杯型</div>
+      <div class="cup-toast-msg">${msg || '請在上方選擇一個杯型後再繼續操作'}</div>
+    </div>
+    <button class="cup-toast-close" onclick="this.parentElement.remove()">&times;</button>
+  `;
+  document.body.appendChild(toast);
+
+  // 觸發動畫
+  requestAnimationFrame(() => toast.classList.add('show'));
+
+  // 3.5 秒後自動消失
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 400);
+  }, 3500);
+
+  // 閃爍杯型選擇區引導用戶
+  const cupGroups = document.querySelector('.cup-groups');
+  if (cupGroups) {
+    cupGroups.classList.add('cup-highlight');
+    cupGroups.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => cupGroups.classList.remove('cup-highlight'), 2000);
+  }
+}
+
+
+/* ══════════════════════════════════════
    杯型選擇
 ══════════════════════════════════════ */
 let selectedCupId = null;
@@ -192,7 +231,7 @@ function handleFileSelect(f) {
 
 uploadForm?.addEventListener('submit', async e => {
   e.preventDefault();
-  if (!selectedCupId) { showErr(uploadErr, '請先選擇杯型'); return; }
+  if (!selectedCupId) { showCupToast('選擇杯型後才能上傳圖片'); return; }
   if (!fileInput.files[0]) { showErr(uploadErr, '請選擇圖片檔案'); return; }
 
   hideErr(uploadErr);
@@ -237,7 +276,7 @@ let generatedFilename = null;
 
 generateForm?.addEventListener('submit', async e => {
   e.preventDefault();
-  if (!selectedCupId) { showErr(generateErr, '請先選擇杯型'); return; }
+  if (!selectedCupId) { showCupToast('選擇杯型後才能使用 AI 生成'); return; }
 
   const theme = generateForm.querySelector('[name=theme]').value.trim();
   if (!theme) { showErr(generateErr, '請填入設計主題'); return; }
@@ -612,7 +651,7 @@ window.addEventListener('message', (e) => {
 
 function createCanvaDesign() {
   if (!selectedCupId) {
-    _canvaShowError('請先選擇杯型');
+    showCupToast('選擇杯型後才能開啟 Canva 設計');
     return;
   }
 
