@@ -15,6 +15,7 @@ from canva import canva_bp
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 BANNER_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads', 'banners')
 ALLOWED_EXT = {'png', 'jpg', 'jpeg'}
+APP_START_TS = str(int(time.time()))  # cache-busting for static assets
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -533,6 +534,7 @@ def inject_globals():
         'ui_font_family': get_ai_setting('ui_font_family') or 'Nunito',
         'ui_font_color': get_ai_setting('ui_font_color') or '',
         'ui_font_size':  get_ai_setting('ui_font_size') or '16',
+        'cache_bust':    APP_START_TS,
     }
 
 
