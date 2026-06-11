@@ -302,18 +302,18 @@ function onRectReady(filename) {
   generatedFilename = filename;
 
   // 下載區連結（轉換完成後才顯示）
-  document.getElementById('rectPreview').src = `/download/${filename}`;
+  document.getElementById('rectPreview').src = `/uploads/${filename}`;
   document.getElementById('dlRect').href = `/download/${filename}`;
 
   // Card 2 內嵌縮圖預覽（放大 + 點擊 lightbox）
   const mini = document.getElementById('rectMiniPreview');
   if (mini) {
-    mini.src = `/download/${filename}`;
+    mini.src = `/uploads/${filename}`;
     mini.style.width  = '180px';
     mini.style.height = '104px';
     mini.classList.add('img-zoomable');
     mini.title = '點擊放大檢視';
-    mini.onclick = () => openLightbox(`/download/${filename}`);
+    mini.onclick = () => openLightbox(`/uploads/${filename}`);
     console.log('[mini] classes:', mini.className, 'cursor:', getComputedStyle(mini).cursor);
   }
 
