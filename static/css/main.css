@@ -1015,26 +1015,36 @@ footer {
 ═══════════════════════════════════════════ */
 .cup-toast {
   position: fixed;
-  top: 24px; right: 24px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(.85);
   z-index: 10000;
-  display: flex; align-items: center; gap: 12px;
-  background: rgba(255,255,255,.95);
-  backdrop-filter: blur(12px);
-  border: 2px solid var(--primary);
-  border-radius: 16px;
-  padding: 16px 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
-  transform: translateX(120%);
+  display: flex; align-items: center; gap: 18px;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(16px);
+  border: 2.5px solid var(--primary);
+  border-radius: 22px;
+  padding: 28px 36px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.18), 0 4px 12px rgba(0,0,0,.08);
   opacity: 0;
   transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s;
-  max-width: 380px;
+  max-width: 460px;
+  min-width: 320px;
 }
 .cup-toast.show {
-  transform: translateX(0);
+  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
+/* 半透明遮罩 */
+.cup-toast::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.25);
+  z-index: -1;
+  border-radius: 0;
+}
 .cup-toast-icon {
-  font-size: 2rem;
+  font-size: 2.8rem;
   flex-shrink: 0;
   animation: toast-bounce .6s ease-out;
 }
@@ -1045,13 +1055,13 @@ footer {
 }
 .cup-toast-body { flex: 1; }
 .cup-toast-title {
-  font-size: .95rem; font-weight: 800;
+  font-size: 1.15rem; font-weight: 800;
   color: var(--primary2);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 .cup-toast-msg {
-  font-size: .82rem; color: var(--text2);
-  line-height: 1.4;
+  font-size: .92rem; color: var(--text2);
+  line-height: 1.5;
 }
 .cup-toast-close {
   background: none; border: none;
