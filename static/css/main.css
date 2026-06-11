@@ -712,6 +712,17 @@ nav a.active { background: var(--primary); color: #fff; }
 }
 .btn-dl:hover { background: var(--second); }
 
+/* 扇形圖預覽：棋盤底色顯示透明區域 */
+.fan-preview-card img {
+  background-image:
+    linear-gradient(45deg, #e8e8e8 25%, transparent 25%),
+    linear-gradient(-45deg, #e8e8e8 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e8e8e8 75%),
+    linear-gradient(-45deg, transparent 75%, #e8e8e8 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
 /* ── 成功動畫 ── */
 .celebrate { display: none; text-align: center; padding: 20px; font-size: 2rem; }
 .celebrate.show { display: block; animation: celebrate .6s ease-out; }

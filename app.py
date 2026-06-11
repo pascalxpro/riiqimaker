@@ -132,12 +132,12 @@ def _polar_warp(rect_img, outer_r, inner_r, theta_deg):
         rect[y1, x1] * fx       * fy
     ).astype(np.uint8)
 
-    # 扇形外填純白 #FFFFFF（規格要求）
-    out = np.full((out_h, out_w, 3), 255, dtype=np.uint8)
-    sampled_rgb = sampled[:, :, :3]
-    out[mask] = sampled_rgb[mask]
+    # 扇形外透明（RGBA），讓扇形輪廓清晰可見
+    out = np.zeros((out_h, out_w, 4), dtype=np.uint8)  # 全透明
+    out[mask, :3] = sampled[mask, :3]  # RGB
+    out[mask, 3]  = 255                 # Alpha = 不透明
 
-    return PILImage.fromarray(out, 'RGB')
+    return PILImage.fromarray(out, 'RGBA')
 
 
 # ── 頁面路由 ──────────────────────────────────────────────
