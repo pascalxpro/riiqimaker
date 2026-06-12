@@ -590,19 +590,33 @@ def admin_save_appearance():
 @app.route('/api/admin/site-title', methods=['POST'])
 @admin_required
 def admin_save_site_title():
-    data = request.get_json()
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+
     title = (data.get('site_title') or '').strip()
     if not title:
         return jsonify({'ok': False, 'msg': '名稱不能為空'}), 400
     set_ai_setting('site_title', title)
     
-    # Logo 圖示（可為 Emoji 或圖片 URL）
-    logo = (data.get('site_logo') or '').strip()
-    set_ai_setting('site_logo', logo)
-
     # Footer 文字（可留空）
     footer = (data.get('footer_text') or '').strip()
     set_ai_setting('footer_text', footer)
+
+    # Logo 上傳
+    if 'site_logo' in request.files:
+        file = request.files['site_logo']
+        if file and file.filename:
+            ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else 'png'
+            # 支援圖片及 SVG
+            if ext in ALLOWED_EXT or ext in ['svg', 'gif', 'webp']:
+                ts = time.strftime('%Y%m%d_%H%M%S')
+                fname = f"logo_{ts}.{ext}"
+                save_path = os.path.join(UPLOAD_FOLDER, fname)
+                file.save(save_path)
+                set_ai_setting('site_logo', f"/uploads/{fname}")
+
     return jsonify({'ok': True})
 
 
