@@ -608,14 +608,15 @@ def admin_save_site_title():
     if 'site_logo' in request.files:
         file = request.files['site_logo']
         if file and file.filename:
+            import base64
             ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else 'png'
             # 支援圖片及 SVG
             if ext in ALLOWED_EXT or ext in ['svg', 'gif', 'webp']:
-                ts = time.strftime('%Y%m%d_%H%M%S')
-                fname = f"logo_{ts}.{ext}"
-                save_path = os.path.join(UPLOAD_FOLDER, fname)
-                file.save(save_path)
-                set_ai_setting('site_logo', f"/uploads/{fname}")
+                img_data = file.read()
+                mime_type = f"image/{ext}" if ext != 'svg' else "image/svg+xml"
+                b64_str = base64.b64encode(img_data).decode('utf-8')
+                data_uri = f"data:{mime_type};base64,{b64_str}"
+                set_ai_setting('site_logo', data_uri)
 
     return jsonify({'ok': True})
 

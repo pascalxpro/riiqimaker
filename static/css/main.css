@@ -200,10 +200,9 @@ header {
 }
 .logo-icon {
   width: 40px; height: 40px;
-  background: var(--primary); border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.3rem;
-  transition: transform .3s, background .4s;
+  transition: transform .3s;
 }
 .logo:hover .logo-icon { transform: rotate(-15deg) scale(1.1); }
 
