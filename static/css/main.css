@@ -630,16 +630,16 @@ nav a.active { background: var(--primary); color: #fff; }
 ═══════════════════════════════════════════ */
 .form-group { margin-bottom: 18px; }
 .form-group label {
-  display: block; font-weight: 800; font-size: .88rem;
-  margin-bottom: 6px; color: var(--text2);
+  display: block; font-weight: 800; font-size: 1.05rem;
+  margin-bottom: 8px; color: var(--text2);
 }
 .form-group input,
 .form-group textarea,
 .form-group select {
-  width: 100%; padding: 10px 14px;
+  width: 100%; padding: 12px 16px;
   border: 2px solid var(--border); border-radius: 14px;
   background: var(--bg); color: var(--text);
-  font-family: 'Nunito', sans-serif; font-size: .95rem;
+  font-family: 'Nunito', sans-serif; font-size: 1.15rem;
   outline: none; transition: border-color .2s;
 }
 .form-group input:focus,
