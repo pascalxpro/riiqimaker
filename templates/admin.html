@@ -47,6 +47,10 @@
         <input type="text" id="siteTitleInput" class="form-input" style="width:100%" value="{{ site_title }}">
       </div>
       <div class="form-group" style="margin-top:14px">
+        <label>Logo 圖示（可輸入 Emoji 或是圖片網址，預設為 ☕）</label>
+        <input type="text" id="siteLogoInput" class="form-input" style="width:100%" placeholder="例：☕ 或 https://.../logo.png" value="{{ site_logo }}">
+      </div>
+      <div class="form-group" style="margin-top:14px">
         <label>Footer 文字（顯示於頁尾，留空則預設為「網站名稱 · RiiqiMaker」）</label>
         <input type="text" id="footerTextInput" class="form-input" style="width:100%" placeholder="例：© 2026 RiiqiMaker · 所有權利保留" value="{{ footer_text }}">
       </div>
@@ -733,7 +737,11 @@ btnSaveSiteTitle.addEventListener('click', async () => {
   btnSaveSiteTitle.disabled = true; btnSaveSiteTitle.textContent = '儲存中…';
   const res = await fetch('/api/admin/site-title', {
     method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ site_title: siteTitleInput.value, footer_text: document.getElementById('footerTextInput').value })
+    body: JSON.stringify({ 
+      site_title: siteTitleInput.value, 
+      site_logo: document.getElementById('siteLogoInput').value,
+      footer_text: document.getElementById('footerTextInput').value 
+    })
   });
   const d = await res.json();
   siteTitleResult.className = 'test-result ' + (d.ok ? 'success' : 'error');

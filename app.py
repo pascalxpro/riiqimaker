@@ -534,6 +534,7 @@ def admin_toggle_user(user_id):
 def inject_globals():
     return {
         'site_title':    get_ai_setting('site_title') or 'RiiqiMaker',
+        'site_logo':     get_ai_setting('site_logo') or '☕',
         'footer_text':   get_ai_setting('footer_text') or '',
         'ui_theme':      get_ai_setting('ui_theme') or 'warm',
         'ui_font_family': get_ai_setting('ui_font_family') or 'Nunito',
@@ -594,6 +595,11 @@ def admin_save_site_title():
     if not title:
         return jsonify({'ok': False, 'msg': '名稱不能為空'}), 400
     set_ai_setting('site_title', title)
+    
+    # Logo 圖示（可為 Emoji 或圖片 URL）
+    logo = (data.get('site_logo') or '').strip()
+    set_ai_setting('site_logo', logo)
+
     # Footer 文字（可留空）
     footer = (data.get('footer_text') or '').strip()
     set_ai_setting('footer_text', footer)
